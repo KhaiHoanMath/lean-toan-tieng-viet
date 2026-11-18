@@ -76,3 +76,10 @@
   .workshop-card, .editorial figure { break-inside: auto; }
   .workshop-goal { background: transparent; border: 1px solid #888; color: #111; }
 }
+.diagnostic-reader { margin: 1rem 0 1.5rem; padding: 1rem; border: 1px solid var(--line); border-radius: .5rem; }
+.diagnostic-reader textarea { display: block; width: 100%; padding: .65rem; margin: .5rem 0 .7rem; resize: vertical; font-family: var(--mono); }
+.diagnostic-reader details { margin-top: .8rem; }
+.diagnostic-reader details > label { display: block; margin: .5rem 0 .25rem; }
+.diagnostic-reader select { max-width: 100%; }
+.diagnostic-reader [data-diagnostic-results] code { white-space: pre-wrap; }
+.diagnostic-reader [data-diagnostic-status]:empty { display: none; }

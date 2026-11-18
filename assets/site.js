@@ -8,7 +8,7 @@
   function normalize(value) {
     return String(value ?? "").toLocaleLowerCase("vi")
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d").replace(/[∣|]/g, " chia het dvd ")
+      .replace(/đ/g, "d").replace(/_/g, " ").replace(/[∣|]/g, " chia het dvd ")
       .replace(/\b(?:pythagoras|pythagore|py[ -]?ta[ -]?go|pi[ -]?ta[ -]?go)\b/g, "pythagore")
       .replace(/\b(?:ta[ -]?let|thales)\b/g, "thales")
       .replace(/\b(?:vi[ -]?et|viete|vieta)\b/g, "viete")
@@ -184,6 +184,38 @@
     render();
   }
 
+  function showPreviousDrafts(editor, prefix, currentKey) {
+    const previous = [];
+    try {
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+        if (key && key !== currentKey && key.startsWith(prefix)) {
+          const value = localStorage.getItem(key);
+          if (value !== null) previous.push(value);
+        }
+      }
+    } catch { return; }
+    if (!previous.length) return;
+
+    const details = document.createElement("details");
+    details.className = "reveal previous-drafts";
+    const summary = document.createElement("summary");
+    summary.textContent = "Đọc bản nháp từ phiên bản trước";
+    details.append(summary);
+    const explanation = document.createElement("p");
+    explanation.textContent = "Bạn đã viết các dòng dưới đây trước khi đề được cập nhật. Hãy chọn và sao chép phần muốn dùng sang ô hiện tại.";
+    details.append(explanation);
+    for (const value of previous) {
+      const source = document.createElement("pre");
+      source.className = "code-block";
+      source.tabIndex = 0;
+      source.textContent = value || "(Bản nháp trống)";
+      details.append(source);
+    }
+    editor.append(details);
+    return true;
+  }
+
   function initEditor(editor) {
     const area = $("[data-lean-code]",editor);
     const external = $("[data-open-lean]",editor);
@@ -192,15 +224,26 @@
     const copy = $("[data-copy-code]",editor);
     if (!area || !external) return;
     const original = area.defaultValue;
-    const key = "lean-toan-viet:draft:" + editor.dataset.exerciseId + ":" + hashText(original);
+    const prefix = "lean-toan-viet:draft:" + editor.dataset.exerciseId + ":";
+    const key = prefix + hashText(original);
+    const hasOlderDraft = showPreviousDrafts(editor, prefix, key);
     const stored = storeGet(key);
+    const reference = editor.closest("[data-standard-reference]");
+    const summary = reference && $("summary", reference);
+    let draftLabel;
+    if (summary) {
+      draftLabel = document.createElement("span");
+      draftLabel.textContent = " · Có bản nháp của bạn";
+      draftLabel.hidden = !hasOlderDraft && (stored === null || stored === original);
+      summary.append(draftLabel);
+    }
     let undoValue = null;
     $("[data-select-proof]",editor)?.addEventListener("click", () => {
-      const blank = /^[ \t]*sorry\b/m.exec(area.value);
+      const blank = /^[ \t]*(chua_chung_minh|sorry)\b/m.exec(area.value);
       area.focus();
       if (blank) {
         const end = blank.index + blank[0].length;
-        area.setSelectionRange(end - 5, end);
+        area.setSelectionRange(end - blank[1].length, end);
       }
     });
     const defaultReset = reset.innerHTML;
@@ -210,6 +253,7 @@
     }
     function save() {
       const saved = storeSet(key,area.value === original ? null : area.value);
+      if (draftLabel && saved) draftLabel.hidden = !hasOlderDraft && area.value === original;
       draft.textContent = saved ? (area.value === original ? "" : "Đã lưu nháp trên máy này.") : "Trình duyệt chưa cho phép lưu nháp.";
     }
     area.addEventListener("input", () => {
@@ -241,7 +285,7 @@
       try {
         if (!navigator.clipboard || !window.isSecureContext) throw Error("unavailable");
         await navigator.clipboard.writeText(area.value);
-        copy.textContent = "Đã sao chép";
+        copy.textContent = $("[data-lean-prelude]",editor) ? "Đã chép phần bài" : "Đã sao chép";
       } catch {
         area.focus(); area.select();
         copy.textContent = "Đã chọn mã";

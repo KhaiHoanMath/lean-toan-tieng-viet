@@ -213,6 +213,14 @@ html:not(.js) .write-guide button { display:none; }
 .editor-bottom { display:flex; align-items:center; gap:.32rem .72rem; flex-wrap:wrap; padding:.1rem .85rem .5rem; }
 .editor-bottom [data-draft-state] { font-size:.74rem; color:var(--muted); margin-right:auto; }
 .editor-bottom a { font-size:.75rem; }
+.editor[data-exercise-id^="viet-"] [data-lean-code],
+.editor[data-exercise-id^="viet-"] + .reveal .code-block code,
+.editorial .code-block code { white-space:pre-wrap; overflow-wrap:anywhere; }
+.previous-drafts { margin: 1rem 0; }
+.previous-drafts > p { margin: .75rem 0; }
+.previous-drafts pre { overflow-x: auto; max-height: 18rem; }
+.glossary-table details { margin-top: .25rem; }
+.glossary-table summary { cursor: pointer; }
 .code-block { overflow:auto; font-size:.87rem; line-height:1.65; color:#e8f0dd; background:#223d31; padding:.9rem 1rem; border-radius:7px; margin:.75rem 0 0; max-width:100%; }
 .code-block code { white-space:pre; overflow-wrap:normal; color:inherit; font-size:inherit; }
 .article-source { margin-top:2rem; padding-top:1.25rem; border-top:1px solid var(--line); }
@@ -341,6 +349,7 @@ main math[display="block"] { overflow-x:auto; overflow-y:hidden; padding:.3em; }
   .lesson-icon { width:30px; height:30px; border-radius:6px; }
   .lesson-icon svg { width:18px; height:18px; }
   .editor [data-lean-code],select,input,textarea { font-size:16px; }
+
   .editor-controls .reset-code { margin-left:0; }
   .goal-line { grid-template-columns:minmax(88px,.44fr) 1fr; }
   .practice-panel .editor-controls { padding:.5rem; }

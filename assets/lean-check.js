@@ -50,9 +50,9 @@
     });
     bar.append(heading, close);
     const help = document.createElement("p");
-    help.textContent = "Trong trình soạn thảo Monaco, đặt con trỏ sau bước vừa viết để xem mục tiêu. Mở All Messages trong bảng Lean để đọc thông báo của cả bài. Nếu khung quá hẹp, hãy mở cùng đoạn mã trong thẻ mới. Nếu còn sorry, chứng minh vẫn còn chỗ trống.";
+    help.textContent = "Trong trình soạn thảo Monaco, đặt con trỏ sau bước vừa viết để xem mục tiêu. Mở All Messages trong bảng Lean để đọc thông báo của cả bài. Nếu khung quá hẹp, hãy mở cùng đoạn mã trong thẻ mới. Cảnh báo “declaration uses `sorry`” cho biết bài còn chỗ thiếu.";
     if (editor.querySelector("[data-lean-prelude]")) {
-      help.textContent += " Phần khai báo tên tiếng Việt nằm ở đầu tệp. Cuộn xuống cuối để đến lời chứng minh của bạn.";
+      help.textContent += " Cuộn xuống cuối tệp để đến bài của bạn. Thay chua_chung_minh bằng một bước chứng minh rồi đọc lại bảng mục tiêu.";
     }
     const fallback = document.createElement("a");
     fallback.href = url;
@@ -63,7 +63,15 @@
     frame.title = "Lean Web — mã của bạn và kết quả kiểm tra";
     frame.referrerPolicy = "no-referrer";
     frame.src = url;
-    panel.append(bar, help, fallback, frame);
+    const guide = document.createElement("a");
+    guide.href = "huong-dan.html#doc-loi";
+    guide.target = "_blank";
+    guide.rel = "noopener noreferrer";
+    guide.textContent = "Đọc thông báo của Lean bằng tiếng Việt (thẻ mới)";
+    const links = document.createElement("div");
+    links.className = "inline-links";
+    links.append(fallback, guide);
+    panel.append(bar, help, links, frame);
     notice.insertAdjacentElement("afterend", panel);
     opened = {panel, notice, editor, current:code};
     notice.textContent = submittedNotice;

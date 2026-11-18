@@ -1,11 +1,108 @@
 /* © 2026 Nguyễn Đăng Khải Hoàn. Bảo lưu các quyền đối với phần biên soạn nguyên gốc. */
 (() => {
   "use strict";
-  const fold = text => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/đ/g, "d")
+  const fold = text => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/đ/g, "d").replace(/_/g, " ")
     .replace(/pythagoras|p[yi][ -]?ta[ -]?go/g, "pythagore")
     .replace(/ta[ -]?let/g, "thales");
   const numeric = new Intl.NumberFormat("vi-VN",{maximumFractionDigits:2});
   const fmt = x => numeric.format(x);
+  const reader = document.querySelector("[data-diagnostic-reader]");
+  if (reader) {
+    const input = reader.querySelector("[data-diagnostic-input]");
+    const status = reader.querySelector("[data-diagnostic-status]");
+    const results = reader.querySelector("[data-diagnostic-results]");
+    const original = reader.querySelector("[data-diagnostic-original]");
+    const prefix = /^(?:(?:.+?:\d+:\d+):\s*)?(?:error|warning)(?:\([\w.]+\))?:\s*/i;
+
+    const locationLine = /^\S[^\n]*:\d+:\d+:?$/;
+
+    function show(text) {
+      results.replaceChildren();
+      original.open = false;
+      original.hidden = true;
+      const raw = original.querySelector("code");
+      raw.textContent = "";
+      if (text.length > 24000) {
+        status.textContent = "Đoạn này khá dài. Hãy chọn riêng thông báo cần đọc trong All Messages.";
+        return;
+      }
+      if (!text.trim()) {
+        status.textContent = "Hãy dán một thông báo hoặc chọn một ví dụ bên dưới.";
+        return;
+      }
+      raw.textContent = text;
+      original.hidden = false;
+      const lines = text.trim().replace(/\r\n?/g, "\n").split("\n");
+      if (locationLine.test(lines[0])) {
+        lines.shift();
+        while (lines.length && !lines[0].trim()) lines.shift();
+      }
+      const title = (lines[0] || "").replace(prefix, "");
+      if (lines.slice(1).some(line => locationLine.test(line) || prefix.test(line) || /^(?:Type mismatch$|Application type mismatch:|unsolved goals$|Unknown identifier |declaration uses )/i.test(line))) {
+        status.textContent = "Có nhiều thông báo trong đoạn vừa dán. Hãy chọn riêng một thông báo để xem lời giải thích.";
+        return;
+      }
+      function part(label, value) {
+        const paragraph = document.createElement("p");
+        const heading = document.createElement("strong");
+        const code = document.createElement("code");
+        heading.textContent = label;
+        code.textContent = value;
+        paragraph.append(heading, " ", code);
+        results.append(paragraph);
+      }
+      function indented(start) {
+        const value = [];
+        for (let i = start; i < lines.length && /^[ \t]+\S/.test(lines[i]); i++) value.push(lines[i]);
+        return value.join("\n").trim();
+      }
+      if (/^(?:Type mismatch|Application type mismatch: The argument)$/i.test(title)) {
+        const has = lines.indexOf("has type");
+        const needs = lines.findIndex(line => /^(?:of sort .*? )?but is expected to have type$/.test(line));
+        if (has > 1 && needs > has && indented(1) && indented(has + 1) && indented(needs + 1)) {
+          status.textContent = /^Application/i.test(title)
+            ? "Đối số đưa vào chưa đúng kiểu. Hãy đọc xem định lý cần một đối số có kiểu nào ở vị trí này."
+            : "Hai kiểu chưa khớp. Hãy so kiểu của biểu thức bạn đã viết với kiểu Lean đang cần. Nếu đang dùng một giả thiết, hãy đọc lại kiểu của giả thiết ấy.";
+          part("Biểu thức đã đưa vào", indented(1));
+          part("Kiểu của biểu thức ấy", indented(has + 1));
+          part("Kiểu Lean đang cần", indented(needs + 1));
+          return;
+        }
+      }
+      if (/^unsolved goals$/i.test(title)) {
+        const goals = [];
+        lines.forEach((line, index) => {
+          if (/^⊢\s+\S/.test(line)) {
+            const rest = indented(index + 1);
+            goals.push(line.replace(/^⊢\s+/, "") + (rest ? "\n" + rest : ""));
+          }
+        });
+        if (goals.length) {
+          status.textContent = "Lời chứng minh còn mục tiêu. Đọc dòng sau dấu ⊢ rồi tìm một giả thiết hoặc định lý đưa đến điều ấy.";
+          goals.forEach((goal, index) => part("Mục tiêu " + (index + 1), goal));
+          return;
+        }
+      }
+      const unknown = /^unknown identifier [`‘']([^`’']+)[`’']\.?$/i.exec(title);
+      if (unknown) {
+        status.textContent = "Lean chưa nhận ra tên này ở vị trí đang viết. Hãy so chữ hoa, chữ thường và dấu gạch dưới với tên trong bài hoặc trong thư viện.";
+        part("Tên Lean đang tìm", unknown[1]);
+      } else if (/^declaration uses [`‘']sorry[`’']\.?$/i.test(title)) {
+        status.textContent = "Chứng minh còn chỗ bỏ trống. Hãy thay chua_chung_minh (hoặc sorry trong Lean chuẩn) bằng bước chứng minh rồi chạy lại.";
+      } else {
+        status.textContent = "Trang hướng dẫn chưa có cách giải thích dạng thông báo này. Hãy đối chiếu nguyên văn với dòng mã Lean đang đánh dấu.";
+      }
+    }
+    reader.addEventListener("submit", event => {
+      event.preventDefault();
+      show(input.value);
+    });
+    reader.querySelector("[data-diagnostic-example]").addEventListener("click", () => {
+      show(reader.querySelector("[data-diagnostic-samples]").value);
+    });
+    reader.hidden = false;
+  }
+
   const field = document.getElementById("glossary-search");
   if (field) {
     const rows = Array.from(document.querySelectorAll("[data-glossary-row]"));
