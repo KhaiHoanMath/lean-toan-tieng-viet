@@ -1,17 +1,21 @@
 /* © 2026 Nguyễn Đăng Khải Hoàn. Bảo lưu các quyền đối với phần biên soạn nguyên gốc. */
 (() => {
   "use strict";
-  const fold = text => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/đ/g, "d");
+  const fold = text => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/đ/g, "d")
+    .replace(/pythagoras|p[yi][ -]?ta[ -]?go/g, "pythagore")
+    .replace(/ta[ -]?let/g, "thales");
   const numeric = new Intl.NumberFormat("vi-VN",{maximumFractionDigits:2});
   const fmt = x => numeric.format(x);
   const field = document.getElementById("glossary-search");
   if (field) {
     const rows = Array.from(document.querySelectorAll("[data-glossary-row]"));
+    const scope = document.querySelector("[data-glossary-scope]");
     function filter() {
       const keys = fold(field.value.trim()).split(/\s+/).filter(Boolean);
       let count = 0;
       for (const row of rows) {
-        const visible = keys.every(word => fold(row.dataset.query).includes(word));
+        const matchesScope = !scope || !scope.value || row.dataset.scope === scope.value;
+        const visible = matchesScope && keys.every(word => fold(row.dataset.query).includes(word));
         row.hidden = !visible;
         if (visible) count += 1;
       }
@@ -19,6 +23,7 @@
     }
     field.value = new URLSearchParams(location.search).get("tu") || "";
     field.addEventListener("input",filter);
+    if (scope) scope.addEventListener("change",filter);
     filter();
   }
 

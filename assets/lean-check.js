@@ -3,7 +3,6 @@
    displays the actual kernel diagnostics in the embedded, independent origin. */
 (() => {
   "use strict";
-  const base = "https://live.lean-lang.org/";
   const submittedNotice = "Khung Lean Web đã mở với đoạn mã đang có trong ô soạn thảo. Bạn có thể đọc thông báo của Lean trong khung dưới.";
   let opened;
 
@@ -14,10 +13,16 @@
     opened = undefined;
   }
 
-  function workspaceURL(editor, code) {
+  function updateLink(editor) {
+    const link = editor.querySelector("[data-open-lean]");
+    const visible = editor.querySelector("[data-lean-code]").value;
+    const prefix = editor.querySelector("[data-lean-prelude]")?.textContent;
+    const code = prefix && visible.trim() ? prefix + "\n\n" + visible : visible;
     const importsMathlib = /^\s*(?:public\s+)?import\s+[^\n]*(?:Mathlib|Batteries|Aesop)(?:\.|\s|$)/m.test(code);
     const project = importsMathlib ? "mathlib-stable" : (editor.dataset.leanProject || "lean-v4.33.1");
-    return base + "#project=" + encodeURIComponent(project) + "&code=" + encodeURIComponent(code);
+    const url = link.dataset.base + "#project=" + encodeURIComponent(project) + "&code=" + encodeURIComponent(code);
+    link.setAttribute("href", url);
+    return url;
   }
 
   function openSession(editor) {
@@ -29,7 +34,7 @@
       return;
     }
     clearSession(opened);
-    const url = workspaceURL(editor, code);
+    const url = updateLink(editor);
     const panel = document.createElement("section");
     panel.className = "live-workspace";
     const bar = document.createElement("div");
@@ -46,6 +51,9 @@
     bar.append(heading, close);
     const help = document.createElement("p");
     help.textContent = "Trong trình soạn thảo Monaco, đặt con trỏ sau bước vừa viết để xem mục tiêu. Mở All Messages trong bảng Lean để đọc thông báo của cả bài. Nếu khung quá hẹp, hãy mở cùng đoạn mã trong thẻ mới. Nếu còn sorry, chứng minh vẫn còn chỗ trống.";
+    if (editor.querySelector("[data-lean-prelude]")) {
+      help.textContent += " Phần khai báo tên tiếng Việt nằm ở đầu tệp. Cuộn xuống cuối để đến lời chứng minh của bạn.";
+    }
     const fallback = document.createElement("a");
     fallback.href = url;
     fallback.target = "_blank";
@@ -66,15 +74,30 @@
   document.addEventListener("click", e => {
     const button = e.target.closest("[data-lean-run]");
     if (button) openSession(button.closest("[data-lean-editor]"));
+    const link = e.target.closest("[data-open-lean]");
+    if (link) {
+      const editor = link.closest("[data-lean-editor]");
+      if (editor.querySelector("[data-lean-prelude]") && !editor.querySelector("[data-lean-code]").value.trim()) {
+        e.preventDefault();
+        openSession(editor);
+        editor.querySelector("[data-lean-code]").focus();
+      } else {
+        updateLink(editor);
+      }
+    }
   });
 
   function invalidate(e) {
-    if (!opened || !opened.editor.contains(e.target)) return;
-    const text = opened.editor.querySelector("[data-lean-code]").value;
+    const editor = e.target.closest("[data-lean-editor]");
+    if (!editor) return;
+    updateLink(editor);
+    if (!opened || opened.editor !== editor) return;
+    const text = editor.querySelector("[data-lean-code]").value;
     opened.notice.textContent = text === opened.current
       ? submittedNotice
       : "Bạn vừa sửa bản nháp bên trên. Bấm Kiểm tra với Lean để mở phiên bản mới.";
   }
+  for (const editor of document.querySelectorAll("[data-lean-editor]")) updateLink(editor);
   document.addEventListener("input", invalidate);
   document.addEventListener("leanviet:reset", invalidate);
 })();

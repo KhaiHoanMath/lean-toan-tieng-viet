@@ -208,15 +208,9 @@
       area.value = stored;
       draft.textContent = "Đã mở lại bản nháp trên máy này.";
     }
-    function updateLink() {
-      const hasMathlib = /^\s*(?:public\s+)?import\s+[^\n]*(?:Mathlib|Batteries|Aesop)(?:\.|\s|$)/m.test(area.value);
-      const project = hasMathlib ? "mathlib-stable" : editor.dataset.leanProject || "lean-v4.33.1";
-      external.setAttribute("href", external.dataset.base + "#project=" + encodeURIComponent(project) + "&code=" + encodeURIComponent(area.value));
-    }
     function save() {
       const saved = storeSet(key,area.value === original ? null : area.value);
       draft.textContent = saved ? (area.value === original ? "" : "Đã lưu nháp trên máy này.") : "Trình duyệt chưa cho phép lưu nháp.";
-      updateLink();
     }
     area.addEventListener("input", () => {
       if (undoValue !== null) { undoValue = null; reset.innerHTML = defaultReset; }
@@ -231,7 +225,6 @@
         area.dispatchEvent(new Event("input", {bubbles:true}));
       });
     }
-    external.addEventListener("click",updateLink);
     reset.addEventListener("click", () => {
       if (undoValue !== null) {
         area.value = undoValue; undoValue = null; reset.innerHTML = defaultReset;
@@ -257,7 +250,6 @@
       window.clearTimeout(copyFeedbackTimer);
       copyFeedbackTimer = window.setTimeout(() => { copy.innerHTML = copyLabel; },1800);
     });
-    updateLink();
   }
 
   function initPractice(switcher) {

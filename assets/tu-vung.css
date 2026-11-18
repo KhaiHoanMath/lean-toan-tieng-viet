@@ -1,0 +1,43 @@
+/* © 2026 Nguyễn Đăng Khải Hoàn. Bảo lưu các quyền đối với phần biên soạn nguyên gốc. */
+.vn-library {padding-bottom: 3rem}
+.vn-heading {max-width: 60rem}
+.vn-heading .lead {max-width: 44rem}
+.vn-jumps {display: flex; align-items: center; flex-wrap: wrap; gap: .6rem 1rem}
+.vn-jumps {margin-top: 1.2rem}
+.vn-lab, .vn-project, .vn-lookup {margin-top: 1.3rem; padding-top: 1.6rem; border-top: 1px solid var(--line)}
+.vn-lab h2, .vn-project h2, .vn-lookup h2 {margin-bottom: .65rem}
+.vn-problem, .vn-project {max-width: 52rem}
+.vn-problem p, .vn-project > p, .vn-lookup > p {max-width: 76ch}
+.vn-write {max-width: 56rem; margin: 1.25rem 0}
+.vn-write h3 {margin: 0 0 .45rem; color: var(--green-dark)}
+.vn-reflect {margin-top: .8rem; padding: .55rem 1rem; border-left: 3px solid var(--green); background: var(--green-pale)}
+.vn-search-controls {display: none}
+.js .vn-search-controls {display: flex; flex-wrap: wrap; align-items: end; gap: .7rem 1rem; margin: 1.1rem 0}
+.vn-search-controls > div:first-child {flex: 1 1 22rem; max-width: 36rem}
+.vn-search-controls select {min-height: 2.8rem; border: 1px solid var(--line); border-radius: .42rem; padding: .35rem .7rem; background: var(--surface)}
+.vn-search-controls label {display: block; margin-bottom: .25rem; font-weight: 600}
+.vn-search-controls .search-field {max-width: 36rem}
+.vn-count {color: var(--muted); font-size: .9rem}
+.vn-table {table-layout: fixed}
+.vn-table th:first-child {width: 7rem}
+.vn-table th:nth-child(2) {width: 42%}
+.vn-table td {vertical-align: top; overflow-wrap: anywhere}
+.vn-table td:first-child {color: var(--muted)}
+.vn-lesson {display: block; margin-top: .25rem}
+.vn-source {margin-top: .3rem; font-size: .81rem; color: var(--muted)}
+.vn-source summary {cursor: pointer}
+.vn-source p {margin: .25rem 0}
+.vn-source .code-block {font-size: .8rem; padding: .65rem; margin: .45rem 0}
+.vn-source .code-block code {white-space: pre-wrap; overflow-wrap: anywhere}
+.vn-tactics dt {margin: .65rem 0 .15rem; color: var(--green-dark)}
+.vn-tactics dd {margin: 0 0 .4rem}
+.vn-table tr[hidden] {display: none}
+@media (max-width: 44rem) {
+ .vn-table {display: block}
+ .vn-table tbody, .vn-table tr, .vn-table td {display: block}
+ .vn-table thead {position: absolute; clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden}
+ .vn-table tr {padding: .65rem .8rem; border-bottom: 1px solid var(--line)}
+ .vn-table td {padding: .13rem 0; border: 0}
+ .vn-table td:first-child {font-size: .8rem}
+ .vn-project .code-block code {white-space: pre-wrap; overflow-wrap: anywhere}
+}
