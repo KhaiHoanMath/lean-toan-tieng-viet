@@ -1,0 +1,27 @@
+/* © 2026 Nguyễn Đăng Khải Hoàn. Bảo lưu các quyền đối với phần biên soạn nguyên gốc. */
+.live-workspace {padding: 1rem;border:1px solid #acbcbb;border-radius:10px;background:#fff;color:#193937;margin:.75rem 0 1rem}
+.live-workspace-bar {display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.live-workspace h3 {margin:0;font-size:1.08rem}.live-workspace p {margin:.55rem 0;line-height:1.55}
+.live-workspace button {border:1px solid #879c96;background:#fff;border-radius:.35rem;padding:.4rem .7rem;color:#173e34;cursor:pointer}
+.live-workspace iframe {display:block;margin-top:.75rem;width:100%;height:clamp(28rem,70vh,54rem);background:#f8f8f7;border:1px solid #c4ceca;border-radius:.4rem}
+.live-workspace a,.curriculum-groups a,.glossary-table a {text-underline-offset:.18em}
+.crosswalk,.glossary-wrap {max-width:70rem;margin:0 auto;padding:2.5rem max(1rem,3vw) 4rem}
+.crosswalk h1,.glossary-wrap h1 {line-height:1.15;letter-spacing:-.04em}
+.jump-links {display:flex;gap:.5rem;flex-wrap:wrap;margin:1.3rem 0}.jump-links a {border:1px solid #b9c9c3;padding:.35rem .7rem;border-radius:.35rem;text-decoration:none}
+.crosswalk aside {max-width:72ch;line-height:1.65}.curriculum-groups {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:.85rem;list-style:none;padding:0}
+.curriculum-groups li {border:1px solid #cbd7d0;border-radius:.5rem;padding:1rem;background:#fff}
+.curriculum-groups h3 {font-size:1.04rem;margin:0 0 .45rem}.curriculum-groups p {line-height:1.55;margin:.3rem 0 .6rem}
+.curriculum-groups small {display:block;color:#4c5c56}.curriculum-groups a {display:inline-block;margin:.2rem .6rem .2rem 0}
+.glossary-input {width:min(100%,35rem);padding:.7rem;border:1px solid #a6b7b0;border-radius:.4rem;background:#fff;font:inherit}
+.glossary-table {width:100%;border-collapse:collapse;margin-top:1rem}.glossary-table th,.glossary-table td {text-align:left;vertical-align:top;padding:.7rem .6rem;border-bottom:1px solid #d7dfd9}.glossary-table code {overflow-wrap:anywhere}
+.math-lab {margin:1.4rem 0;padding:1.2rem;border:1px solid #c1d3ca;border-radius:.65rem;background:#f4f8f3;color:#17382d}
+.math-lab h3 {margin-top:0}.math-lab [data-figure] {width:min(100%,31rem);margin:.75rem 0}
+.math-lab svg {width:100%;height:auto;background:#fff;border:1px solid #d4e0d7;border-radius:.4rem;display:block}
+.math-lab label {display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;margin:.45rem 0}.math-lab input[type=range] {accent-color:#176644;max-width:100%}
+.math-lab output {display:block;font-weight:600;padding:.5rem 0}.math-lab noscript {display:block}
+math {max-width:100%;font-size:1.03em}
+@media(max-width:570px){.glossary-table,.glossary-table tbody,.glossary-table tr,.glossary-table td {display:block}.glossary-table thead{position:absolute;clip-path:inset(50%)}.glossary-table tr{padding:.6rem 0;border-bottom:1px solid #cbd7d0}.glossary-table td{padding:.1rem 0;border:0}.glossary-table td:first-child{font-weight:650}.live-workspace{padding:.55rem}}
+.proof-receipt dl {margin:0 0 .7em}
+.proof-receipt dt {font-weight:600; margin-top:.45em}
+.proof-receipt dd {margin:0; overflow-wrap:anywhere}
+.proof-receipt summary svg {vertical-align:middle}
