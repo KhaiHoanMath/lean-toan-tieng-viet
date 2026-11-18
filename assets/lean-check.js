@@ -4,6 +4,7 @@
 (() => {
   "use strict";
   const base = "https://live.lean-lang.org/";
+  const submittedNotice = "Khung Lean Web đã mở với đoạn mã đang có trong ô soạn thảo. Bạn có thể đọc thông báo của Lean trong khung dưới.";
   let opened;
 
   function clearSession(session) {
@@ -23,6 +24,7 @@
     const code = editor.querySelector("[data-lean-code]").value;
     const notice = editor.querySelector("[data-lean-result]");
     if (!code.trim()) {
+      if (opened && opened.editor === editor) clearSession(opened);
       notice.textContent = "Ô soạn thảo còn trống. Hãy nhập một phát biểu hoặc chọn Làm lại để lấy đề ban đầu.";
       return;
     }
@@ -43,7 +45,7 @@
     });
     bar.append(heading, close);
     const help = document.createElement("p");
-    help.textContent = "Đặt con trỏ sau bước vừa viết để xem mục tiêu. Trên màn hình hẹp, bấm Text để chuyển sang bảng Lean rồi mở All Messages để đọc thông báo. Nếu còn sorry, chứng minh vẫn còn chỗ trống.";
+    help.textContent = "Trong trình soạn thảo Monaco, đặt con trỏ sau bước vừa viết để xem mục tiêu. Mở All Messages trong bảng Lean để đọc thông báo của cả bài. Nếu khung quá hẹp, hãy mở cùng đoạn mã trong thẻ mới. Nếu còn sorry, chứng minh vẫn còn chỗ trống.";
     const fallback = document.createElement("a");
     fallback.href = url;
     fallback.target = "_blank";
@@ -56,7 +58,7 @@
     panel.append(bar, help, fallback, frame);
     notice.insertAdjacentElement("afterend", panel);
     opened = {panel, notice, editor, current:code};
-    notice.textContent = "Đã mở bản mã hiện tại trong Lean Web. Kết quả do Lean hiển thị trong khung dưới.";
+    notice.textContent = submittedNotice;
     heading.setAttribute("tabindex", "-1");
     heading.focus({preventScroll:true});
   }
@@ -69,9 +71,9 @@
   function invalidate(e) {
     if (!opened || !opened.editor.contains(e.target)) return;
     const text = opened.editor.querySelector("[data-lean-code]").value;
-    if (text !== opened.current) {
-      opened.notice.textContent = "Bạn vừa sửa bản nháp bên trên. Bấm Kiểm tra với Lean để mở phiên bản mới.";
-    }
+    opened.notice.textContent = text === opened.current
+      ? submittedNotice
+      : "Bạn vừa sửa bản nháp bên trên. Bấm Kiểm tra với Lean để mở phiên bản mới.";
   }
   document.addEventListener("input", invalidate);
   document.addEventListener("leanviet:reset", invalidate);

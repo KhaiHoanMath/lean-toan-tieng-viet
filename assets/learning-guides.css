@@ -1,0 +1,78 @@
+/* © 2026 Nguyễn Đăng Khải Hoàn. Bảo lưu các quyền đối với phần biên soạn nguyên gốc. */
+.learn-routes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.learn-routes a {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .25rem .8rem;
+  align-content: start;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  color: var(--green-dark);
+  background: var(--surface);
+  text-decoration: none;
+}
+.learn-routes a:hover { border-color: var(--green); }
+.learn-routes a .icon { grid-row: 1 / 3; margin-top: .15rem; }
+.learn-routes a span { font-size: .9rem; line-height: 1.5; color: var(--muted); }
+.editorial figure svg { display: block; }
+.editorial figure:not(.goal-demo) {
+  margin: 1.25rem 0;
+  padding: 1rem 1.15rem;
+  border-left: 3px solid var(--green);
+  background: var(--green-pale);
+}
+.editorial figure:not(.goal-demo) figcaption { margin-top: .5rem; font-size: .89rem; }
+.workshop { max-width: 53rem; margin: 0 auto 4rem; }
+.workshop > p, .workshop-card > p { max-width: 72ch; }
+.workshop-nav { margin: 1.1rem 0 2rem; }
+.workshop-card { padding: 1.6rem 0 2rem; border-top: 1px solid var(--line); }
+.workshop-card > h2 { font-size: clamp(1.55rem, 3vw, 2.1rem); margin: 0 0 .6rem; }
+.workshop-goal {
+  display: block;
+  margin: 1rem 0;
+  padding: 1rem 1.2rem;
+  line-height: 1.6;
+  border-radius: .55rem;
+  color: #fff;
+  background: #193f32;
+  white-space: pre-wrap;
+}
+.workshop-options { border: 0; padding: 0; margin: 0 0 .8rem; }
+.workshop-options legend { padding: 0; margin-bottom: .5rem; font-weight: 650; }
+.workshop-option {
+  display: flex;
+  align-items: baseline;
+  gap: .55rem;
+  margin: .35rem 0;
+  width: fit-content;
+  min-width: min(100%, 12rem);
+  border: 1px solid var(--line);
+  border-radius: .4rem;
+  background: var(--surface);
+  padding: .45rem .8rem;
+  cursor: pointer;
+}
+.workshop-option:focus-within { outline: 2px solid var(--green); outline-offset: 1px; }
+.workshop-option input { accent-color: var(--green); }
+.workshop-feedback { margin: .65rem 0; padding: .6rem 1rem; border-left: 3px solid var(--green); background: var(--green-pale); }
+.workshop-feedback summary { font-weight: 600; cursor: pointer; }
+.workshop-feedback p { margin: .55rem 0; }
+.workshop-task + .reveal { margin-top: 1rem; }
+.crosswalk:has(#video) { max-width: 65rem; }
+.crosswalk:has(#video) > p { max-width: 73ch; margin: 1rem 0; }
+.crosswalk:has(#video) section { margin: 2.3rem 0; }
+.crosswalk:has(#video) .curriculum-groups { padding-inline-start: 0; }
+@media (max-width: 44rem) {
+  .learn-routes { grid-template-columns: 1fr; gap: .55rem; }
+  .learn-routes a { padding: .8rem 1rem; }
+  .workshop-card { padding: 1.2rem 0 1.6rem; }
+}
+@media print {
+  .workshop-card, .editorial figure { break-inside: auto; }
+  .workshop-goal { background: transparent; border: 1px solid #888; color: #111; }
+}

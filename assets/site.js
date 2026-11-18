@@ -242,8 +242,9 @@
       editor.dispatchEvent(new CustomEvent("leanviet:reset", {bubbles:true}));
       area.focus();
     });
+    const copyLabel = copy.innerHTML;
+    let copyFeedbackTimer;
     copy.addEventListener("click", async () => {
-      const label = copy.innerHTML;
       try {
         if (!navigator.clipboard || !window.isSecureContext) throw Error("unavailable");
         await navigator.clipboard.writeText(area.value);
@@ -253,7 +254,8 @@
         copy.textContent = "Đã chọn mã";
         draft.textContent = "Dùng Ctrl+C hoặc ⌘C để sao chép đoạn đã chọn.";
       }
-      window.setTimeout(() => { copy.innerHTML = label; },1800);
+      window.clearTimeout(copyFeedbackTimer);
+      copyFeedbackTimer = window.setTimeout(() => { copy.innerHTML = copyLabel; },1800);
     });
     updateLink();
   }
