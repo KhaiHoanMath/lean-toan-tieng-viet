@@ -61,8 +61,11 @@
     }));
 
     function apply(updateURL) {
-      const q = normalize(search.value);
+      const query = search.value.trim();
+      const q = normalize(query);
       const tokens = q ? q.split(" ") : [];
+      const challengeOnly = q === "thu suc" || q === "bai toan thu suc";
+      const declaration = /[_.]/.test(query) && !/\s/.test(query);
       const gradeValue = grade?.value || "";
       const strandValue = strand.value;
       const leanOnly = lean.checked;
@@ -72,7 +75,8 @@
       for (const entry of entries) {
         const visible = (!gradeValue || gradeValue === entry.grade) &&
           (!strandValue || strandValue === entry.strand) && (!leanOnly || entry.hasLean) &&
-          tokens.every(token => entry.text.includes(token));
+          (!challengeOnly || entry.el.hasAttribute("data-thu-suc")) &&
+          (declaration ? entry.text.includes(q) : tokens.every(token => entry.text.includes(token)));
         entry.el.hidden = !visible;
         if (!visible) { rest.push(entry); continue; }
         const score = !q ? 0 : entry.title === q ? 4 : entry.title.startsWith(q) ? 3 :
