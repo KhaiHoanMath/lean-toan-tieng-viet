@@ -1,9 +1,6 @@
 /* © 2026 Nguyễn Đăng Khải Hoàn. Bảo lưu các quyền đối với phần biên soạn nguyên gốc. */
 (() => {
   "use strict";
-  const fold = text => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/đ/g, "d").replace(/_/g, " ")
-    .replace(/pythagoras|p[yi][ -]?ta[ -]?go/g, "pythagore")
-    .replace(/ta[ -]?let/g, "thales");
   const numeric = new Intl.NumberFormat("vi-VN",{maximumFractionDigits:2});
   const fmt = x => numeric.format(x);
   const reader = document.querySelector("[data-diagnostic-reader]");
@@ -83,10 +80,23 @@
           return;
         }
       }
+      if (/^Tactic [`‘']rewrite[`’'] failed: Did not find an occurrence of the pattern$/i.test(title)) {
+        const target = lines.indexOf("in the target expression");
+        if (target > 1 && indented(1) && indented(target + 1)) {
+          status.textContent = "Lệnh viết lại chưa tìm thấy biểu thức cần thay trong mục tiêu. Với h : a = b, lệnh viet_lai [h] tìm a để thay bằng b. Nếu định viết theo chiều ngược, hãy kiểm tra xem mục tiêu có chứa b hay không.";
+          part("Biểu thức Lean đang tìm", indented(1));
+          part("Mục tiêu trước khi viết lại", indented(target + 1));
+          return;
+        }
+      }
       const unknown = /^unknown identifier [`‘']([^`’']+)[`’']\.?$/i.exec(title);
       if (unknown) {
         status.textContent = "Lean chưa nhận ra tên này ở vị trí đang viết. Hãy so chữ hoa, chữ thường và dấu gạch dưới với tên trong bài hoặc trong thư viện.";
         part("Tên Lean đang tìm", unknown[1]);
+      } else if (/^unknown tactic$/i.test(title)) {
+        status.textContent = "Lean chưa nhận ra lệnh ở đầu bước chứng minh. Xem dòng được đánh dấu và tra lại cách viết của lệnh. Chẳng hạn, phan_xa viết với một chữ a ở cuối. Nếu Lean báo thêm mục tiêu chưa giải, hãy sửa tên lệnh rồi kiểm tra lại.";
+      } else if (/^no goals to be solved$/i.test(title)) {
+        status.textContent = "Khi đến dòng này, Lean đã khép hết mục tiêu trong nhánh đang xét. Đặt con trỏ ở cuối dòng trước để xem bước nào vừa kết thúc chứng minh. Nếu viết thừa một bước, hãy bỏ bước ấy. Nếu muốn sang nhánh khác, hãy kiểm tra dấu · và chỗ thụt đầu dòng.";
       } else if (/^declaration uses [`‘']sorry[`’']\.?$/i.test(title)) {
         status.textContent = "Chứng minh còn chỗ bỏ trống. Hãy thay chua_chung_minh (hoặc sorry trong Lean chuẩn) bằng bước chứng minh rồi chạy lại.";
       } else {
@@ -101,27 +111,6 @@
       show(reader.querySelector("[data-diagnostic-samples]").value);
     });
     reader.hidden = false;
-  }
-
-  const field = document.getElementById("glossary-search");
-  if (field) {
-    const rows = Array.from(document.querySelectorAll("[data-glossary-row]"));
-    const scope = document.querySelector("[data-glossary-scope]");
-    function filter() {
-      const keys = fold(field.value.trim()).split(/\s+/).filter(Boolean);
-      let count = 0;
-      for (const row of rows) {
-        const matchesScope = !scope || !scope.value || row.dataset.scope === scope.value;
-        const visible = matchesScope && keys.every(word => fold(row.dataset.query).includes(word));
-        row.hidden = !visible;
-        if (visible) count += 1;
-      }
-      document.querySelector("[data-glossary-count]").textContent = count ? count + " mục từ" : "Chưa tìm thấy mục từ này. Hãy thử một ký hiệu hoặc một từ ngắn hơn.";
-    }
-    field.value = new URLSearchParams(location.search).get("tu") || "";
-    field.addEventListener("input",filter);
-    if (scope) scope.addEventListener("change",filter);
-    filter();
   }
 
   const chart = markup => '<svg viewBox="0 0 320 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+markup+'</svg>';
@@ -162,7 +151,7 @@
     }
     const hitA=a*b, hitOther=(100-a)*c, total=hitA+hitOther;
     const bar=total?'<rect x="15" y="34" width="'+290*hitA/total+'" height="30" fill="'+colors[0]+'"/><rect x="'+(15+290*hitA/total)+'" y="34" width="'+290*hitOther/total+'" height="30" fill="'+colors[1]+'"/>':'';
-    return [chart(bar+label(15,90,"Nhóm A đạt: "+hitA)+label(157,90,"Còn lại đạt: "+hitOther)),total?"Có "+total+" người đạt, trong đó "+hitA+" người thuộc nhóm A. P(A | đạt) = "+hitA+"/"+total+(100*hitA%total===0?" = ":" ≈ ")+fmt(100*hitA/total)+"%.":"Không có người nào đạt. P(A | đạt) chưa xác định."];
+    return [chart(bar+label(15,90,"Nhóm A đạt: "+hitA)+label(157,90,"Còn lại đạt: "+hitOther)),total?"Có "+total+" người đạt, trong đó "+hitA+" người thuộc nhóm A. P(A | đạt) = "+hitA+"/"+total+(10000*hitA%total===0?" = ":" ≈ ")+fmt(100*hitA/total)+"%.":"Không có người nào đạt. P(A | đạt) chưa xác định."];
   }
 
   for(const lab of document.querySelectorAll("[data-math-lab]")){

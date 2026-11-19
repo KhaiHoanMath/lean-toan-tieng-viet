@@ -9,12 +9,32 @@
     return String(value ?? "").toLocaleLowerCase("vi")
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       .replace(/đ/g, "d").replace(/_/g, " ").replace(/[∣|]/g, " chia het dvd ")
+      .replace(/(\p{L})[-‐‑‒–—](?=\p{L})/gu, "$1 ")
       .replace(/\b(?:pythagoras|pythagore|py[ -]?ta[ -]?go|pi[ -]?ta[ -]?go)\b/g, "pythagore")
       .replace(/\b(?:ta[ -]?let|thales)\b/g, "thales")
-      .replace(/\b(?:vi[ -]?et|viete|vieta)\b/g, "viete")
-      .replace(/\bdinh ly\b/g, "dinh li")
+      .replace(/\b(?:vi et|viete|vieta)\b/g, "viete")
+      .replace(/\b(dinh|nguyen) ly\b/g, "$1 li")
       .replace(/\bty (le|so)\b/g, "ti $1")
       .replace(/\s+/g, " ").trim();
+  }
+
+  function searchWords(query) {
+    return query.match(/\b(?:dinh li|nguyen li|ti so|ti le)\b|\S+/g) || [];
+  }
+
+  function initFormulaScrolling() {
+    const formulas = $$(".inline-formula");
+    if (!formulas.length || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(entries => {
+      for (const {target} of entries) {
+        if (target.clientWidth && target.scrollWidth > target.clientWidth) {
+          target.tabIndex = 0;
+        } else {
+          target.removeAttribute("tabindex");
+        }
+      }
+    });
+    formulas.forEach(formula => observer.observe(formula));
   }
 
   function initNav() {
@@ -46,6 +66,26 @@
     if (location.hash === "#tim-kiem") $("#tim-kiem")?.focus();
   }
 
+  function initGlossary(field) {
+    const rows = $$("[data-glossary-row]").map(row => ({ row, terms: normalize(row.dataset.query) }));
+    const scope = $("[data-glossary-scope]");
+    const count = $("[data-glossary-count]");
+    function filter() {
+      const words = searchWords(normalize(field.value));
+      let total = 0;
+      for (const {row, terms} of rows) {
+        const matchesScope = !scope?.value || row.dataset.scope === scope.value;
+        row.hidden = !(matchesScope && words.every(word => terms.includes(word)));
+        if (!row.hidden) total++;
+      }
+      count.textContent = total ? total + " mục từ" : "Chưa tìm thấy mục từ này. Hãy thử một ký hiệu hoặc một từ ngắn hơn.";
+    }
+    field.value = new URLSearchParams(location.search).get("tu") || "";
+    field.addEventListener("input", filter);
+    scope?.addEventListener("change", filter);
+    filter();
+  }
+
   function initCatalog(catalog) {
     const search = $("#tim-kiem", catalog);
     const grade = $("[data-grade-filter]", catalog);
@@ -58,14 +98,21 @@
     const entries = $$("[data-entry]", catalog).map((el, order) => ({
       el, order, text: normalize(el.dataset.terms), title: normalize(el.dataset.title),
       grade: el.dataset.grade, strand: el.dataset.strand, hasLean: el.dataset.lean === "1",
+      extensions: $$("[data-deepening-name]", el).map(row => ({
+        row, title: normalize($("a", row).textContent), topics: normalize(row.dataset.deepeningTopics),
+        caption: $("[data-matched-name]", row), challenge: row.hasAttribute("data-challenge"),
+        names: (row.dataset.deepeningAliases || row.dataset.deepeningName).split(" ")
+          .map(name => ({ raw: name, normalized: normalize(name) })),
+      })),
     }));
 
     function apply(updateURL) {
       const query = search.value.trim();
       const q = normalize(query);
-      const tokens = q ? q.split(" ") : [];
+      const tokens = searchWords(q);
       const challengeOnly = q === "thu suc" || q === "bai toan thu suc";
-      const declaration = /[_.]/.test(query) && !/\s/.test(query);
+      const enrichmentOnly = q === "dao sau" || q === "nang cao";
+      const declaration = /^[\p{L}][\p{L}\p{N}_'.]*[_.][\p{L}\p{N}_']+$/u.test(query);
       const gradeValue = grade?.value || "";
       const strandValue = strand.value;
       const leanOnly = lean.checked;
@@ -73,14 +120,41 @@
       const matched = [];
       const rest = [];
       for (const entry of entries) {
+        let extensionMatches = [];
+        if (challengeOnly) {
+          extensionMatches = entry.extensions.filter(extension => extension.challenge);
+        } else if (q && !enrichmentOnly && !entry.title.includes(q)) {
+          if (declaration) {
+            const exactName = name => name.normalized === q || name.normalized.endsWith("." + q);
+            extensionMatches = entry.extensions.filter(extension => extension.names.some(exactName));
+            if (!extensionMatches.length) {
+              extensionMatches = entry.extensions.filter(extension => extension.names.some(name => name.normalized.includes(q)));
+            }
+          } else {
+            const exactTitle = entry.extensions.filter(extension => extension.title === q);
+            extensionMatches = exactTitle.length ? exactTitle : entry.extensions.filter(extension =>
+              tokens.every(token => extension.title.includes(token) || extension.topics.includes(token)));
+          }
+        }
         const visible = (!gradeValue || gradeValue === entry.grade) &&
           (!strandValue || strandValue === entry.strand) && (!leanOnly || entry.hasLean) &&
           (!challengeOnly || entry.el.hasAttribute("data-thu-suc")) &&
-          (declaration ? entry.text.includes(q) : tokens.every(token => entry.text.includes(token)));
+          (!enrichmentOnly || entry.extensions.length > 0) &&
+          (extensionMatches.length > 0 || (declaration ? entry.text.includes(q) : tokens.every(token => entry.text.includes(token))));
         entry.el.hidden = !visible;
         if (!visible) { rest.push(entry); continue; }
+        for (const extension of entry.extensions) {
+          const selected = extensionMatches.includes(extension);
+          extension.row.hidden = extensionMatches.length > 0 && !selected;
+          extension.caption.hidden = !(declaration && selected);
+          if (declaration && selected) {
+            const found = extension.names.find(name => name.normalized === q || name.normalized.endsWith("." + q))
+              || extension.names.find(name => name.normalized.includes(q));
+            extension.caption.textContent = found ? found.raw : extension.row.dataset.deepeningName;
+          }
+        }
         const score = !q ? 0 : entry.title === q ? 4 : entry.title.startsWith(q) ? 3 :
-          entry.title.includes(q) ? 2 : tokens.every(token => entry.title.includes(token)) ? 1 : 0;
+          entry.title.includes(q) || extensionMatches.length ? 2 : tokens.every(token => entry.title.includes(token)) ? 1 : 0;
         matched.push({entry, score});
       }
       matched.sort((a,b) => b.score - a.score || a.entry.order - b.entry.order);
@@ -143,6 +217,7 @@
     const button = $("[data-save-lesson]"), home = $("[data-resume]");
     if (!button && !home) return;
     const known = home ? new Set(home.dataset.knownLessons.split(" ")) : null;
+    const targets = home ? JSON.parse(home.dataset.bookmarkTargets || "{}") : {};
     function read() {
       try {
         const saved = JSON.parse(storeGet(key));
@@ -163,7 +238,7 @@
         home.hidden = !saved;
         if (saved) {
           const dest = $("[data-resume-link]",home);
-          dest.setAttribute("href","bai-"+saved.id+".html");
+          dest.setAttribute("href", targets[saved.id] || "bai-"+saved.id+".html");
           dest.textContent = "Lớp "+saved.grade+" · "+saved.title;
         }
       }
@@ -402,7 +477,10 @@
   }
 
   initNav();
+  initFormulaScrolling();
   initBookmark();
+  const glossary = $("#glossary-search");
+  if (glossary) initGlossary(glossary);
   initWorkshop();
   $$("[data-catalog]").forEach(initCatalog);
   $$("[data-lean-editor]").forEach(initEditor);
