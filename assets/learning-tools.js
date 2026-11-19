@@ -48,6 +48,14 @@
         paragraph.append(heading, " ", code);
         results.append(paragraph);
       }
+      function resource(label, href) {
+        const paragraph = document.createElement("p");
+        const link = document.createElement("a");
+        link.href = href;
+        link.textContent = label;
+        paragraph.append(link);
+        results.append(paragraph);
+      }
       function indented(start) {
         const value = [];
         for (let i = start; i < lines.length && /^[ \t]+\S/.test(lines[i]); i++) value.push(lines[i]);
@@ -89,7 +97,7 @@
       if (/^Tactic [`‘']rewrite[`’'] failed: Did not find an occurrence of the pattern$/i.test(title)) {
         const target = lines.indexOf("in the target expression");
         if (target > 1 && indented(1) && indented(target + 1)) {
-          status.textContent = "Lean chưa tìm thấy biểu thức cần thay trong mục tiêu. Với h : a = b, lệnh viet_lai [h] tìm a để thay bằng b. Nếu muốn thay b bằng a, hãy kiểm tra xem mục tiêu có chứa b không.";
+          status.textContent = "Lean chưa tìm thấy biểu thức cần thay. Với h : a = b, viet_lai [h] thay a bằng b. Nếu mục tiêu có b và bạn muốn thay b bằng a, hãy thử viet_lai [← h].";
           part("Biểu thức Lean đang tìm", indented(1));
           part("Mục tiêu trước khi viết lại", indented(target + 1));
           return;
@@ -97,10 +105,12 @@
       }
       const unknown = /^unknown identifier [`‘']([^`’']+)[`’']\.?$/i.exec(title);
       if (unknown) {
-        status.textContent = "Lean chưa nhận ra tên này. Hãy đối chiếu với tên trong bài hoặc trong thư viện, kể cả chữ hoa, chữ thường và dấu gạch dưới.";
+        status.textContent = "Lean chưa nhận ra tên này. Kiểm tra cách viết, kể cả chữ hoa và dấu gạch dưới. Nếu mục tra cứu có tên đó, hãy thử khai báo từ chính mục ấy để mở một tệp đã nạp đúng thư viện.";
         part("Tên Lean đang tìm", unknown[1]);
+        resource("Tra khai báo theo điều cần chứng minh", "ngon-ngu-toan-viet.html#tra-cuu");
       } else if (/^unknown tactic$/i.test(title)) {
-        status.textContent = "Lean chưa nhận ra lệnh chứng minh ở dòng được đánh dấu. Hãy tra lại cách viết, chẳng hạn phan_xa chỉ có một chữ a ở cuối. Sửa lệnh trước rồi kiểm tra xem còn điều gì phải chứng minh.";
+        status.textContent = "Lean chưa nhận ra lệnh ở dòng được đánh dấu. Hãy nói thành lời bước bạn định làm, chẳng hạn “dùng giả thiết”, rồi tìm lệnh và đối chiếu cách viết.";
+        resource("Tra lệnh theo việc cần làm", "ngon-ngu-toan-viet.html#doc-loi-goi");
       } else if (/^no goals to be solved$/i.test(title)) {
         status.textContent = "Đến dòng này, nhánh đang xét đã được chứng minh xong. Hãy đặt con trỏ ở cuối dòng trước để tìm bước kết thúc nhánh. Nếu bạn định sang nhánh khác, hãy kiểm tra dấu · và chỗ thụt đầu dòng.";
       } else if (/^declaration uses [`‘']sorry[`’']\.?$/i.test(title)) {

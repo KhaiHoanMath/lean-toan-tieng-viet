@@ -330,6 +330,17 @@
       area.value = stored;
       draft.textContent = "Đã mở lại bản nháp của bạn.";
     }
+    area.addEventListener("keydown", event => {
+      if (event.key !== "Enter" || event.isComposing || event.altKey ||
+          event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const before = area.value.slice(0, area.selectionStart);
+      const indent = /^[ \t]+/.exec(before.slice(before.lastIndexOf("\n") + 1));
+      // Use an editing command when supported so Enter remains undoable.
+      if (indent && document.queryCommandSupported?.("insertText") &&
+          document.execCommand("insertText", false, "\n" + indent[0])) {
+        event.preventDefault();
+      }
+    });
     function save() {
       const saved = storeSet(key,area.value === original ? null : area.value);
       if (draftLabel && saved) draftLabel.hidden = !hasOlderDraft && area.value === original;

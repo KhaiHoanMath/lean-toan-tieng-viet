@@ -3,7 +3,7 @@
    displays the actual kernel diagnostics in the embedded, independent origin. */
 (() => {
   "use strict";
-  const submittedNotice = "Đoạn mã trong ô soạn thảo đã được mở bằng Lean Web. Xem kết quả kiểm tra trong khung bên dưới.";
+  const submittedNotice = "Xem kết quả kiểm tra của bản mã vừa gửi trong khung Lean Web bên dưới.";
   let opened;
 
   function clearSession(session) {
@@ -44,15 +44,16 @@
     const close = document.createElement("button");
     close.type = "button";
     close.textContent = "Đóng";
+    close.setAttribute("aria-label", "Đóng khung kiểm tra và quay lại ô soạn thảo");
     close.addEventListener("click", () => {
       clearSession(opened);
-      editor.querySelector("[data-lean-run]").focus();
+      editor.querySelector("[data-lean-code]").focus();
     });
     bar.append(heading, close);
     const help = document.createElement("p");
-    help.textContent = "Đặt con trỏ sau bước vừa viết để xem còn điều gì phải chứng minh. Chọn “All Messages” để đọc mọi thông báo của Lean. Cảnh báo “declaration uses `sorry`” báo rằng chứng minh còn chỗ bỏ trống.";
+    help.textContent = "Trong khung bên dưới, đặt con trỏ sau bước vừa viết rồi đọc điều cần chứng minh sau dấu ⊢. Mở mục “All Messages” (mọi thông báo) để xem lỗi và cảnh báo. Dòng “declaration uses `sorry`” cho biết chứng minh còn chỗ trống.";
     if (editor.querySelector("[data-lean-prelude]")) {
-      help.textContent += " Bài của bạn nằm ở cuối tệp. Thay chua_chung_minh bằng lời giải rồi xem Lean còn yêu cầu chứng minh điều gì.";
+      help.textContent += " Phần bạn vừa viết nằm ở cuối tệp.";
     }
     const fallback = document.createElement("a");
     fallback.href = url;
@@ -77,6 +78,7 @@
     notice.textContent = submittedNotice;
     heading.setAttribute("tabindex", "-1");
     heading.focus({preventScroll:true});
+    panel.scrollIntoView({block:"start"});
   }
 
   document.addEventListener("click", e => {
@@ -85,7 +87,7 @@
     const link = e.target.closest("[data-open-lean]");
     if (link) {
       const editor = link.closest("[data-lean-editor]");
-      if (editor.querySelector("[data-lean-prelude]") && !editor.querySelector("[data-lean-code]").value.trim()) {
+      if (!editor.querySelector("[data-lean-code]").value.trim()) {
         e.preventDefault();
         openSession(editor);
         editor.querySelector("[data-lean-code]").focus();
@@ -93,6 +95,16 @@
         updateLink(editor);
       }
     }
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Enter" || !(e.ctrlKey || e.metaKey) || e.altKey ||
+        e.shiftKey || e.isComposing || e.repeat) return;
+    const area = e.target.closest("[data-lean-code]");
+    const editor = area?.closest("[data-lean-editor]");
+    if (!editor) return;
+    e.preventDefault();
+    openSession(editor);
   });
 
   function invalidate(e) {
