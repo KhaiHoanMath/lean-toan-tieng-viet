@@ -106,6 +106,12 @@
       })),
     }));
 
+    const courseResults = $("[data-course-matches]", catalog);
+    const courseRows = $$("[data-course-hit]", catalog).map(el => ({
+      el, terms: normalize(el.dataset.terms), grades: el.dataset.grade.split(" "),
+      chapter: el.hasAttribute("data-course-chapter"), strands: el.dataset.strands.split(" "),
+    }));
+
     function apply(updateURL) {
       const query = search.value.trim();
       const q = normalize(query);
@@ -136,7 +142,9 @@
               tokens.every(token => extension.title.includes(token) || extension.topics.includes(token)));
           }
         }
-        const visible = (!gradeValue || gradeValue === entry.grade) &&
+        const gradeMatches = gradeValue === "thcs" ? ["6", "7", "8", "9"].includes(entry.grade) :
+          !gradeValue || gradeValue === entry.grade;
+        const visible = gradeMatches &&
           (!strandValue || strandValue === entry.strand) && (!leanOnly || entry.hasLean) &&
           (!challengeOnly || entry.el.hasAttribute("data-thu-suc")) &&
           (!enrichmentOnly || entry.extensions.length > 0) &&
@@ -163,7 +171,17 @@
       ordered.forEach(({el}) => fragment.appendChild(el));
       results.appendChild(fragment);
       count.textContent = matched.length + " bài học" + (active ? " phù hợp" : "");
-      empty.hidden = matched.length !== 0;
+      let inCourses = 0;
+      for (const course of courseRows) {
+        const show = (q || (gradeValue && course.chapter)) && (!gradeValue || course.grades.includes(gradeValue)) &&
+          (!strandValue || course.strands.includes(strandValue)) &&
+          (declaration ? course.terms.includes(q) : tokens.every(token => course.terms.includes(token)));
+        course.el.hidden = !show;
+        if (show) inCourses++;
+      }
+      if (courseResults) courseResults.hidden = inCourses === 0;
+      if (inCourses) count.textContent = inCourses + " mục trong lộ trình · " + matched.length + " bài đọc";
+      empty.hidden = matched.length + inCourses > 0;
       clears[0].hidden = !active;
 
       if (updateURL) {
@@ -222,7 +240,9 @@
       try {
         const saved = JSON.parse(storeGet(key));
         if (!saved || typeof saved.id !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(saved.id) ||
-            typeof saved.title !== "string" || !Number.isInteger(saved.grade) || saved.grade < 6 || saved.grade > 12 ||
+            typeof saved.title !== "string" ||
+            (saved.grade == null ? !(saved.id === "hoc-lean" || saved.id.startsWith("chuyen-de-")) :
+              !Number.isInteger(saved.grade) || saved.grade < 6 || saved.grade > 12) ||
             (known && !known.has(saved.id))) return null;
         return saved;
       } catch { return null; }
@@ -239,14 +259,14 @@
         if (saved) {
           const dest = $("[data-resume-link]",home);
           dest.setAttribute("href", targets[saved.id] || "bai-"+saved.id+".html");
-          dest.textContent = "Lớp "+saved.grade+" · "+saved.title;
+          dest.textContent = saved.grade ? "Lớp " + saved.grade + " · " + saved.title : saved.title;
         }
       }
     }
     if (button) button.addEventListener("click",() => {
       const current = read(), data = button.dataset;
       const removing = current?.id === data.lessonId;
-      const changed = storeSet(key,removing ? null : JSON.stringify({id:data.lessonId,title:data.lessonTitle,grade:Number(data.lessonGrade)}));
+      const changed = storeSet(key,removing ? null : JSON.stringify({id:data.lessonId,title:data.lessonTitle,grade:data.lessonGrade ? Number(data.lessonGrade) : null}));
       const status = $("[data-bookmark-status]");
       status.textContent = !changed ? "Không lưu được dấu trang trên trình duyệt này." : removing ? "Đã bỏ đánh dấu." : "Đã đánh dấu bài. Bạn có thể mở lại từ trang chủ trên trình duyệt này.";
       render();
@@ -318,7 +338,7 @@
     }
     let undoValue = null;
     $("[data-select-proof]",editor)?.addEventListener("click", () => {
-      const blank = /^[ \t]*(chua_chung_minh|sorry)\b/m.exec(area.value);
+      const blank = /^(?:[ \t]*·)?[ \t]*(chua_chung_minh|sorry)\b/m.exec(area.value);
       area.focus();
       if (blank) {
         const end = blank.index + blank[0].length;

@@ -62,6 +62,8 @@
     fallback.target = "_blank";
     fallback.rel = "noopener noreferrer";
     fallback.textContent = "Mở cùng đoạn mã trong thẻ mới ↗";
+    const draftHelp = document.createElement("p");
+    draftHelp.textContent = "Để giữ bản nháp trên trang học, hãy viết ở ô của bài rồi bấm kiểm tra lại. Nếu sửa trong Lean Web, hãy chép phần vừa sửa về ô của bài.";
     const frame = document.createElement("iframe");
     frame.title = "Lean Web — mã của bạn và kết quả kiểm tra";
     frame.referrerPolicy = "no-referrer";
@@ -74,7 +76,7 @@
     const links = document.createElement("div");
     links.className = "inline-links";
     links.append(fallback, guide);
-    panel.append(bar, help, links, frame);
+    panel.append(bar, help, links, frame, draftHelp);
     notice.insertAdjacentElement("afterend", panel);
     opened = {panel, notice, editor, current:code};
     notice.textContent = submittedNotice;
