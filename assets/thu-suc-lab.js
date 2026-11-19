@@ -9,7 +9,7 @@
     function readDiagonal() {
       const members = diagonal.filter(cell => !cell.checked).map(cell => cell.dataset.row);
       const set = members.length ? "{" + members.join(", ") + "}" : "∅";
-      result.textContent = "B = " + set + ". B khác mỗi hàng i ở chính số i.";
+      result.textContent = "B = " + set + ". Với mỗi hàng i, số i thuộc đúng một trong hai tập B và tập ở hàng đó.";
     }
     cells.forEach(cell => { cell.disabled = false; });
     grid.querySelector("[data-cantor-prompt]").hidden = false;
@@ -44,8 +44,8 @@
           if (matDo === 6 && matXanh === 6) haiMatSau = soCach;
         }
       }
-      ketQua.textContent = "Trong " + tong + " kết quả đồng khả năng làm máy báo sáng, có " +
-        haiMatSau + " kết quả cho hai mặt 6. Xác suất là " + phanSo(haiMatSau, tong) + ".";
+      ketQua.textContent = "Trong " + tong + " kết quả đồng khả năng làm đèn báo sáng, có " +
+        haiMatSau + " kết quả mà cả hai xúc xắc đều ra mặt 6. Vậy xác suất có điều kiện là " + phanSo(haiMatSau, tong) + ".";
     }
     form.addEventListener("change", demLai);
     demLai();
@@ -72,9 +72,9 @@
       for (const dau of banThu.querySelectorAll("[data-ruler-mark]")) {
         dau.setAttribute("visibility", vach.includes(Number(dau.dataset.rulerMark)) ? "visible" : "hidden");
       }
-      banThu.querySelector("[data-ruler-desc]").textContent = "Các vạch ở " + vach.join(", ") + " cm.";
+      banThu.querySelector("[data-ruler-desc]").textContent = "Các vạch đặt tại " + vach.join(", ") + " cm.";
       const ketQua = thieu.length
-        ? "Đo được " + (6 - thieu.length) + " trong 6 độ dài. Còn thiếu " + thieu.join(", ") + " cm."
+        ? "Đo được " + (6 - thieu.length) + " trong 6 độ dài cần đo. Còn thiếu " + thieu.join(", ") + " cm."
         : "Đo đủ cả sáu độ dài, mỗi độ dài ứng với đúng một cặp vạch.";
       banThu.querySelector("[data-lab-summary]").textContent =
         (a === b ? "Hai vạch bên trong đang trùng nhau. " : "") + ketQua;
@@ -100,7 +100,7 @@
     bang.querySelector("tbody").replaceWith(than);
     bang.querySelector("caption").textContent = "Các cặp thừa số của " + n * n + " và hai mẫu số tương ứng";
     banThu.querySelector("[data-lab-summary]").textContent =
-      "Với n = " + n + ", có " + than.children.length + " cách tách khi x ≤ y.";
+      "Với n = " + n + ", có " + than.children.length + " cách chọn hai mẫu số x, y thỏa mãn x ≤ y.";
   }
 
   function haiLuot(banThu, nn, ns, sn, ss) {
@@ -108,18 +108,18 @@
     const ketQua = banThu.querySelector("[data-lab-summary]");
     const tungLuot = banThu.querySelector("[data-lab-margins]");
     if (tong === 0) {
-      ketQua.textContent = "Túi đang rỗng. Hãy cho ít nhất một phiếu vào túi để tính xác suất.";
+      ketQua.textContent = "Túi đang rỗng. Hãy thêm ít nhất một phiếu để có thể tính xác suất.";
       tungLuot.textContent = "";
       return;
     }
     const benNguoiDau = giu === 0
-      ? "Cả hai loại phiếu có hai mặt khác nhau đều vắng mặt. Không thể tính xác suất có điều kiện khi ấy."
-      : "Trong số phiếu giữ lại, bên nhận ngửa–sấp có xác suất " + phanSo(ns, giu) +
-        ", bên nhận sấp–ngửa có xác suất " + phanSo(sn, giu) + ".";
+      ? "Không có phiếu nào ghi hai kết quả khác nhau. Xác suất với điều kiện giữ được phiếu không xác định."
+      : "Trong số phiếu giữ lại, xác suất chọn bên nhận “ngửa rồi sấp” là " + phanSo(ns, giu) +
+        ", còn xác suất chọn bên nhận “sấp rồi ngửa” là " + phanSo(sn, giu) + ".";
     ketQua.textContent = "Túi có " + tong + " phiếu. Xác suất giữ được phiếu là " + phanSo(giu, tong) +
       ". " + benNguoiDau;
-    tungLuot.textContent = "Xác suất ngửa ở lượt đầu bằng " + phanSo(nn + ns, tong) +
-      ", ở lượt sau bằng " + phanSo(nn + sn, tong) + ". Hai lượt " +
+    tungLuot.textContent = "Xác suất ra mặt ngửa ở lượt đầu là " + phanSo(nn + ns, tong) +
+      ", ở lượt sau là " + phanSo(nn + sn, tong) + ". Hai lượt " +
       (nn * ss === ns * sn ? "độc lập" : "phụ thuộc nhau") + " trong mô hình này.";
   }
 
@@ -153,7 +153,7 @@
       const b = form.elements.namedItem("thu-hai").selectedOptions[0];
       bang.hidden = a.value === b.value;
       if (bang.hidden) {
-        ketQua.textContent = "Hai người phải chọn hai vòng khác nhau. Hãy đổi một vòng rồi so lại.";
+        ketQua.textContent = "Hãy chọn hai vòng khác nhau để so sánh.";
         return;
       }
       const hang = a.dataset.values.split(" ").map(Number), cot = b.dataset.values.split(" ").map(Number);
@@ -172,8 +172,8 @@
           if (x > y) thang++;
         }
       }
-      ketQua.textContent = "Vòng " + a.value + " thắng vòng " + b.value + " ở " + thang +
-        " trong 9 kết quả đồng khả năng. Xác suất thắng bằng " + phanSo(thang, 9) + ".";
+      ketQua.textContent = "Vòng " + a.value + " thắng vòng " + b.value + " trong " + thang +
+        " trên 9 kết quả đồng khả năng. Xác suất thắng là " + phanSo(thang, 9) + ".";
     }
     form.addEventListener("change", hienBang);
     hienBang();
@@ -207,8 +207,8 @@
         const lan = giaTri("lan"), giu = 10 + lan;
         banThu.querySelector("[data-o-cua]").textContent = String(lan);
         banThu.querySelector("[data-lab-summary]").textContent =
-          "Khi người dẫn mở cửa 3, đổi cửa thắng 10 trong " + giu + " ván, tức xác suất bằng " +
-          phanSo(10, giu) + ". Tính trên cả 30 ván, chiến lược luôn đổi thắng 20 ván.";
+          "Trong " + giu + " ván mà người dẫn mở cửa 3, có 10 ván thắng nếu đổi cửa. Xác suất có điều kiện là " +
+          phanSo(10, giu) + ". Tính trên cả 30 ván, luôn đổi cửa thì thắng 20 ván.";
       } else haiLuot(banThu, giaTri("nn"), giaTri("ns"), giaTri("sn"), giaTri("ss"));
     });
   }

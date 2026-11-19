@@ -25,6 +25,6 @@
       matches += found;
     }
     if (!words.length) previous = null;
-    count.textContent = matches ? matches + " từ và cách viết" : "Chưa tìm thấy từ này. Hãy thử một từ ngắn hơn.";
+    count.textContent = matches ? matches + " mục phù hợp" : "Chưa tìm thấy kết quả. Hãy thử một từ ngắn hơn.";
   });
 })();

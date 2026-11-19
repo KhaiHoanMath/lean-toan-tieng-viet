@@ -20,11 +20,11 @@
       const raw = original.querySelector("code");
       raw.textContent = "";
       if (text.length > 24000) {
-        status.textContent = "Đoạn này khá dài. Hãy chọn riêng thông báo cần đọc trong All Messages.";
+        status.textContent = "Đoạn vừa dán quá dài. Hãy vào mục “All Messages” và sao chép riêng thông báo bạn muốn đọc.";
         return;
       }
       if (!text.trim()) {
-        status.textContent = "Hãy dán một thông báo hoặc chọn một ví dụ bên dưới.";
+        status.textContent = "Hãy dán một thông báo của Lean hoặc mở ví dụ bên dưới.";
         return;
       }
       raw.textContent = text;
@@ -36,7 +36,7 @@
       }
       const title = (lines[0] || "").replace(prefix, "");
       if (lines.slice(1).some(line => locationLine.test(line) || prefix.test(line) || /^(?:Type mismatch$|Application type mismatch:|unsolved goals$|Unknown identifier |declaration uses )/i.test(line))) {
-        status.textContent = "Có nhiều thông báo trong đoạn vừa dán. Hãy chọn riêng một thông báo để xem lời giải thích.";
+        status.textContent = "Đoạn vừa dán có nhiều thông báo. Hãy dán từng thông báo để đọc lời giải thích.";
         return;
       }
       function part(label, value) {
@@ -58,13 +58,19 @@
         const needs = lines.findIndex(line => /^(?:of sort .*? )?but is expected to have type$/.test(line));
         if (has > 1 && needs > has && indented(1) && indented(has + 1) && indented(needs + 1)) {
           status.textContent = /^Application/i.test(title)
-            ? "Đối số đưa vào chưa đúng kiểu. Hãy đọc xem định lý cần một đối số có kiểu nào ở vị trí này."
-            : "Hai kiểu chưa khớp. Hãy so kiểu của biểu thức bạn đã viết với kiểu Lean đang cần. Nếu đang dùng một giả thiết, hãy đọc lại kiểu của giả thiết ấy.";
+            ? "Đối số ở vị trí này có kiểu khác với kiểu cần dùng. Hãy kiểm tra kiểu và thứ tự các đối số."
+            : "Kiểu của biểu thức đã viết khác với kiểu Lean yêu cầu. Nếu bạn dùng một giả thiết, hãy đối chiếu phát biểu của giả thiết ấy với điều cần chứng minh.";
           part("Biểu thức đã đưa vào", indented(1));
-          part("Kiểu của biểu thức ấy", indented(has + 1));
-          part("Kiểu Lean đang cần", indented(needs + 1));
+          part("Kiểu của biểu thức", indented(has + 1));
+          part("Kiểu Lean yêu cầu", indented(needs + 1));
           return;
         }
+      }
+      if (/^numerals are data in Lean, but the expected type is a proposition$/i.test(title)) {
+        status.textContent = "Bạn vừa đưa vào một số. Ở vị trí này, Lean cần một chứng minh của mệnh đề bên dưới. Hãy xem có giả thiết nào cho đúng mệnh đề ấy không.";
+        const expected = indented(1);
+        if (expected) part("Mệnh đề cần chứng minh", expected);
+        return;
       }
       if (/^unsolved goals$/i.test(title)) {
         const goals = [];
@@ -75,7 +81,7 @@
           }
         });
         if (goals.length) {
-          status.textContent = "Lời chứng minh còn mục tiêu. Đọc dòng sau dấu ⊢ rồi tìm một giả thiết hoặc định lý đưa đến điều ấy.";
+          status.textContent = "Chứng minh còn dang dở. Đọc điều cần chứng minh sau dấu ⊢, rồi xem có giả thiết hay định lý nào giúp bạn làm tiếp.";
           goals.forEach((goal, index) => part("Mục tiêu " + (index + 1), goal));
           return;
         }
@@ -83,7 +89,7 @@
       if (/^Tactic [`‘']rewrite[`’'] failed: Did not find an occurrence of the pattern$/i.test(title)) {
         const target = lines.indexOf("in the target expression");
         if (target > 1 && indented(1) && indented(target + 1)) {
-          status.textContent = "Lệnh viết lại chưa tìm thấy biểu thức cần thay trong mục tiêu. Với h : a = b, lệnh viet_lai [h] tìm a để thay bằng b. Nếu định viết theo chiều ngược, hãy kiểm tra xem mục tiêu có chứa b hay không.";
+          status.textContent = "Lean chưa tìm thấy biểu thức cần thay trong mục tiêu. Với h : a = b, lệnh viet_lai [h] tìm a để thay bằng b. Nếu muốn thay b bằng a, hãy kiểm tra xem mục tiêu có chứa b không.";
           part("Biểu thức Lean đang tìm", indented(1));
           part("Mục tiêu trước khi viết lại", indented(target + 1));
           return;
@@ -91,16 +97,16 @@
       }
       const unknown = /^unknown identifier [`‘']([^`’']+)[`’']\.?$/i.exec(title);
       if (unknown) {
-        status.textContent = "Lean chưa nhận ra tên này ở vị trí đang viết. Hãy so chữ hoa, chữ thường và dấu gạch dưới với tên trong bài hoặc trong thư viện.";
+        status.textContent = "Lean chưa nhận ra tên này. Hãy đối chiếu với tên trong bài hoặc trong thư viện, kể cả chữ hoa, chữ thường và dấu gạch dưới.";
         part("Tên Lean đang tìm", unknown[1]);
       } else if (/^unknown tactic$/i.test(title)) {
-        status.textContent = "Lean chưa nhận ra lệnh ở đầu bước chứng minh. Xem dòng được đánh dấu và tra lại cách viết của lệnh. Chẳng hạn, phan_xa viết với một chữ a ở cuối. Nếu Lean báo thêm mục tiêu chưa giải, hãy sửa tên lệnh rồi kiểm tra lại.";
+        status.textContent = "Lean chưa nhận ra lệnh chứng minh ở dòng được đánh dấu. Hãy tra lại cách viết, chẳng hạn phan_xa chỉ có một chữ a ở cuối. Sửa lệnh trước rồi kiểm tra xem còn điều gì phải chứng minh.";
       } else if (/^no goals to be solved$/i.test(title)) {
-        status.textContent = "Khi đến dòng này, Lean đã khép hết mục tiêu trong nhánh đang xét. Đặt con trỏ ở cuối dòng trước để xem bước nào vừa kết thúc chứng minh. Nếu viết thừa một bước, hãy bỏ bước ấy. Nếu muốn sang nhánh khác, hãy kiểm tra dấu · và chỗ thụt đầu dòng.";
+        status.textContent = "Đến dòng này, nhánh đang xét đã được chứng minh xong. Hãy đặt con trỏ ở cuối dòng trước để tìm bước kết thúc nhánh. Nếu bạn định sang nhánh khác, hãy kiểm tra dấu · và chỗ thụt đầu dòng.";
       } else if (/^declaration uses [`‘']sorry[`’']\.?$/i.test(title)) {
-        status.textContent = "Chứng minh còn chỗ bỏ trống. Hãy thay chua_chung_minh (hoặc sorry trong Lean chuẩn) bằng bước chứng minh rồi chạy lại.";
+        status.textContent = "Chứng minh còn chỗ bỏ trống. Hãy thay chua_chung_minh (hay sorry trong cú pháp Lean chuẩn) bằng lời giải rồi kiểm tra lại.";
       } else {
-        status.textContent = "Trang hướng dẫn chưa có cách giải thích dạng thông báo này. Hãy đối chiếu nguyên văn với dòng mã Lean đang đánh dấu.";
+        status.textContent = "Trang này chưa có lời giải thích cho thông báo đó. Bạn có thể mở nguyên văn bên dưới và đối chiếu với dòng Lean đánh dấu.";
       }
     }
     reader.addEventListener("submit", event => {
@@ -125,8 +131,8 @@
       for(const [j,n] of [a,b].entries()){
         for(let i=0;i<n;i++) shape+='<circle cx="'+(14+(i%16)*17)+'" cy="'+(14+j*55+Math.floor(i/16)*17)+'" r="5.2" fill="'+["#a73c3c","#22639b"][j]+'"/>';
       }
-      const words=(n)=>n%d===0?"chia hết":"dư "+n%d;
-      return [chart(shape),a+" bút đỏ "+words(a)+" khi chia cho "+d+"; "+b+" bút xanh "+words(b)+". Tổng "+(a+b)+" "+words(a+b)+" khi chia cho "+d+"."];
+      const words=(n)=>n%d===0?"chia vừa hết":"còn dư "+n%d;
+      return [chart(shape),"Khi chia cho "+d+", số bút đỏ ("+a+") "+words(a)+", số bút xanh ("+b+") "+words(b)+", còn tổng số bút ("+(a+b)+") "+words(a+b)+"."];
     }
     if(type==="tam-giac") {
       const scale=Math.min(195/a,82/b);
@@ -139,7 +145,7 @@
     if(type==="tan-so"){
       const ns=[a,b,c], total=a+b+c, names=["Đi bộ","Xe đạp","Xe buýt"];
       const shape=ns.map((n,i)=>'<rect x="'+(30+100*i)+'" y="'+(99-3.3*n)+'" width="45" height="'+3.3*n+'" fill="'+colors[i]+'"/>'+label(27+100*i,118,names[i])+label(39+100*i,91-3.3*n,n)).join('');
-      return [chart(shape),total?"Có "+total+" bạn. "+ns.map((n,i)=>names[i]+": "+fmt(100*n/total)+"%").join(" · ")+".":"Chưa có quan sát nào. Khi tổng bằng 0, tần số tương đối chưa xác định."];
+      return [chart(shape),total?"Có "+total+" bạn. "+ns.map((n,i)=>names[i]+": "+fmt(100*n/total)+"%").join(" · ")+".":"Chưa có bạn nào trong mẫu. Cần ít nhất một bạn để tính tần số tương đối."];
     }
     if(type==="tiep-tuyen"){
       const xx=t=>160+t*38, yy=t=>102-t*8.5;
@@ -151,7 +157,7 @@
     }
     const hitA=a*b, hitOther=(100-a)*c, total=hitA+hitOther;
     const bar=total?'<rect x="15" y="34" width="'+290*hitA/total+'" height="30" fill="'+colors[0]+'"/><rect x="'+(15+290*hitA/total)+'" y="34" width="'+290*hitOther/total+'" height="30" fill="'+colors[1]+'"/>':'';
-    return [chart(bar+label(15,90,"Nhóm A đạt: "+hitA)+label(157,90,"Còn lại đạt: "+hitOther)),total?"Có "+total+" người đạt, trong đó "+hitA+" người thuộc nhóm A. P(A | đạt) = "+hitA+"/"+total+(10000*hitA%total===0?" = ":" ≈ ")+fmt(100*hitA/total)+"%.":"Không có người nào đạt. P(A | đạt) chưa xác định."];
+    return [chart(bar+label(15,90,"Nhóm A đạt: "+hitA)+label(157,90,"Ngoài nhóm A đạt: "+hitOther)),total?"Có "+total+" người đạt, trong đó "+hitA+" người thuộc nhóm A. P(A | đạt) = "+hitA+"/"+total+(10000*hitA%total===0?" = ":" ≈ ")+fmt(100*hitA/total)+"%.":"Không có ai đạt nên xác suất có điều kiện P(A | đạt) không xác định."];
   }
 
   for(const lab of document.querySelectorAll("[data-math-lab]")){

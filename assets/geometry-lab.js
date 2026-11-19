@@ -46,8 +46,8 @@
       const e = Number(es.value);
       const rd = ratio(d);
       const re = ratio(e);
-      ds.setAttribute("aria-valuetext", d + " phần mười độ dài AB");
-      es.setAttribute("aria-valuetext", e + " phần mười độ dài AC");
+      ds.setAttribute("aria-valuetext", "AD bằng " + d + " phần mười độ dài AB");
+      es.setAttribute("aria-valuetext", "AE bằng " + e + " phần mười độ dài AC");
       move("d", point(b, d));
       move("e", point(c, e));
       root.querySelector('[data-length="d"]').textContent = "AD = " + decimal.format(d) + " cm";

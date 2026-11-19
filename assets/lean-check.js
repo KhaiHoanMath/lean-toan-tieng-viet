@@ -3,7 +3,7 @@
    displays the actual kernel diagnostics in the embedded, independent origin. */
 (() => {
   "use strict";
-  const submittedNotice = "Khung Lean Web đã mở với đoạn mã đang có trong ô soạn thảo. Bạn có thể đọc thông báo của Lean trong khung dưới.";
+  const submittedNotice = "Đoạn mã trong ô soạn thảo đã được mở bằng Lean Web. Xem kết quả kiểm tra trong khung bên dưới.";
   let opened;
 
   function clearSession(session) {
@@ -30,7 +30,7 @@
     const notice = editor.querySelector("[data-lean-result]");
     if (!code.trim()) {
       if (opened && opened.editor === editor) clearSession(opened);
-      notice.textContent = "Ô soạn thảo còn trống. Hãy nhập một phát biểu hoặc chọn Làm lại để lấy đề ban đầu.";
+      notice.textContent = "Ô soạn thảo còn trống. Hãy nhập mã Lean hoặc chọn “Làm lại” để khôi phục đề ban đầu.";
       return;
     }
     clearSession(opened);
@@ -40,7 +40,7 @@
     const bar = document.createElement("div");
     bar.className = "live-workspace-bar";
     const heading = document.createElement("h3");
-    heading.textContent = "Cửa sổ Lean Web";
+    heading.textContent = "Kiểm tra bài trên Lean Web";
     const close = document.createElement("button");
     close.type = "button";
     close.textContent = "Đóng";
@@ -50,9 +50,9 @@
     });
     bar.append(heading, close);
     const help = document.createElement("p");
-    help.textContent = "Trong trình soạn thảo Monaco, đặt con trỏ sau bước vừa viết để xem mục tiêu. Mở All Messages trong bảng Lean để đọc thông báo của cả bài. Nếu khung quá hẹp, hãy mở cùng đoạn mã trong thẻ mới. Cảnh báo “declaration uses `sorry`” cho biết bài còn chỗ thiếu.";
+    help.textContent = "Đặt con trỏ sau bước vừa viết để xem còn điều gì phải chứng minh. Chọn “All Messages” để đọc mọi thông báo của Lean. Cảnh báo “declaration uses `sorry`” báo rằng chứng minh còn chỗ bỏ trống.";
     if (editor.querySelector("[data-lean-prelude]")) {
-      help.textContent += " Cuộn xuống cuối tệp để đến bài của bạn. Thay chua_chung_minh bằng một bước chứng minh rồi đọc lại bảng mục tiêu.";
+      help.textContent += " Bài của bạn nằm ở cuối tệp. Thay chua_chung_minh bằng lời giải rồi xem Lean còn yêu cầu chứng minh điều gì.";
     }
     const fallback = document.createElement("a");
     fallback.href = url;
@@ -103,7 +103,7 @@
     const text = editor.querySelector("[data-lean-code]").value;
     opened.notice.textContent = text === opened.current
       ? submittedNotice
-      : "Bạn vừa sửa bản nháp bên trên. Bấm Kiểm tra với Lean để mở phiên bản mới.";
+      : "Khung Lean Web đang hiện bản trước khi sửa. Chọn “Kiểm tra với Lean” để kiểm tra bản mới.";
   }
   for (const editor of document.querySelectorAll("[data-lean-editor]")) updateLink(editor);
   document.addEventListener("input", invalidate);

@@ -78,7 +78,7 @@
         row.hidden = !(matchesScope && words.every(word => terms.includes(word)));
         if (!row.hidden) total++;
       }
-      count.textContent = total ? total + " mục từ" : "Chưa tìm thấy mục từ này. Hãy thử một ký hiệu hoặc một từ ngắn hơn.";
+      count.textContent = total ? total + " mục từ" : "Chưa tìm thấy mục từ phù hợp. Hãy thử một ký hiệu hoặc một từ ngắn hơn.";
     }
     field.value = new URLSearchParams(location.search).get("tu") || "";
     field.addEventListener("input", filter);
@@ -248,7 +248,7 @@
       const removing = current?.id === data.lessonId;
       const changed = storeSet(key,removing ? null : JSON.stringify({id:data.lessonId,title:data.lessonTitle,grade:Number(data.lessonGrade)}));
       const status = $("[data-bookmark-status]");
-      status.textContent = !changed ? "Trình duyệt chưa cho phép lưu chỗ học." : removing ? "Đã bỏ đánh dấu." : "Đã lưu trên trình duyệt này. Bạn có thể học tiếp từ trang chủ.";
+      status.textContent = !changed ? "Không lưu được dấu trang trên trình duyệt này." : removing ? "Đã bỏ đánh dấu." : "Đã đánh dấu bài. Bạn có thể mở lại từ trang chủ trên trình duyệt này.";
       render();
     });
     if (home) $("[data-clear-bookmark]",home).addEventListener("click",() => {
@@ -256,7 +256,7 @@
       if (storeSet(key,null)) {
         render(); status.textContent = "Đã bỏ đánh dấu.";
         $(".home-hero .button")?.focus();
-      } else { status.textContent = "Trình duyệt chưa cho phép thay đổi chỗ đã lưu."; }
+      } else { status.textContent = "Không bỏ được dấu đã lưu trên trình duyệt này."; }
     });
     window.addEventListener("storage",event => { if (event.key === key || event.key === null) render(); });
     window.addEventListener("pageshow",render);
@@ -279,10 +279,10 @@
     const details = document.createElement("details");
     details.className = "reveal previous-drafts";
     const summary = document.createElement("summary");
-    summary.textContent = "Đọc bản nháp từ phiên bản trước";
+    summary.textContent = "Xem bản nháp trước khi đề thay đổi";
     details.append(summary);
     const explanation = document.createElement("p");
-    explanation.textContent = "Bạn đã viết các dòng dưới đây trước khi đề được cập nhật. Hãy chọn và sao chép phần muốn dùng sang ô hiện tại.";
+    explanation.textContent = "Đây là phần bạn đã viết trước khi đề thay đổi. Bạn có thể sao chép những dòng còn dùng được vào ô soạn thảo.";
     details.append(explanation);
     for (const value of previous) {
       const source = document.createElement("pre");
@@ -312,7 +312,7 @@
     let draftLabel;
     if (summary) {
       draftLabel = document.createElement("span");
-      draftLabel.textContent = " · Có bản nháp của bạn";
+      draftLabel.textContent = " · Có bản nháp";
       draftLabel.hidden = !hasOlderDraft && (stored === null || stored === original);
       summary.append(draftLabel);
     }
@@ -328,12 +328,12 @@
     const defaultReset = reset.innerHTML;
     if (stored !== null && stored !== original) {
       area.value = stored;
-      draft.textContent = "Đã mở lại bản nháp trên máy này.";
+      draft.textContent = "Đã mở lại bản nháp của bạn.";
     }
     function save() {
       const saved = storeSet(key,area.value === original ? null : area.value);
       if (draftLabel && saved) draftLabel.hidden = !hasOlderDraft && area.value === original;
-      draft.textContent = saved ? (area.value === original ? "" : "Đã lưu nháp trên máy này.") : "Trình duyệt chưa cho phép lưu nháp.";
+      draft.textContent = saved ? (area.value === original ? "" : "Đã lưu bản nháp trên trình duyệt này.") : "Không lưu được bản nháp trên trình duyệt này.";
     }
     area.addEventListener("input", () => {
       if (undoValue !== null) { undoValue = null; reset.innerHTML = defaultReset; }
@@ -364,7 +364,7 @@
       try {
         if (!navigator.clipboard || !window.isSecureContext) throw Error("unavailable");
         await navigator.clipboard.writeText(area.value);
-        copy.textContent = $("[data-lean-prelude]",editor) ? "Đã chép phần bài" : "Đã sao chép";
+        copy.textContent = $("[data-lean-prelude]",editor) ? "Đã sao chép mã trong ô" : "Đã sao chép";
       } catch {
         area.focus(); area.select();
         copy.textContent = "Đã chọn mã";
@@ -447,7 +447,7 @@
       event.preventDefault();
       const [d,a,b] = inputs(divisibility, ["d","a","b"], [1,0,0]);
       const target = $("[data-lab-result]",divisibility);
-      if ([d,a,b].includes(null)) { target.textContent="Nhập số tự nhiên trong giới hạn của mỗi ô. Số chia phải dương."; return; }
+      if ([d,a,b].includes(null)) { target.textContent="Nhập a và b từ 0 đến 10 000, d từ 1 đến 10 000. Cả ba phải là số nguyên."; return; }
       const divides = n => n % d === 0 ? " chia hết cho " : " không chia hết cho ";
       target.textContent = a + divides(a) + d + ". " + b + divides(b) + d + ". Tổng " + a + " + " + b + " = " + (a+b) + divides(a+b) + d + ".";
     });
@@ -471,7 +471,7 @@
       const fmt=new Intl.NumberFormat("vi-VN",{maximumFractionDigits:1});
       input.addEventListener("input",() => {
         const t=Number(input.value),rateA=20+.7*t,rateB=10+.7*t;
-        target.textContent="Với "+t+"% bài dễ, tỉ lệ phối hợp là "+fmt.format(rateA)+"% ở nhóm A và "+fmt.format(rateB)+"% ở nhóm B. Nhóm A cao hơn 10 điểm phần trăm.";
+        target.textContent="Với cùng "+t+"% bài dễ, tỉ lệ gộp là "+fmt.format(rateA)+"% ở nhóm A và "+fmt.format(rateB)+"% ở nhóm B. Nhóm A cao hơn 10 điểm phần trăm.";
       });
     }
   }

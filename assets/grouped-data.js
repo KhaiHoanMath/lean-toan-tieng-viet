@@ -10,7 +10,7 @@
     return tokens.map((token, index) => {
       if (token.length > 100 || !/^[+-]?(?:\d+(?:[.,]\d+)?|[.,]\d+)$/u.test(token)) {
         throw new Error('Kiểm tra số thứ ' + (index + 1) + ' trong ' + label +
-          '. Nhập một số nguyên hoặc số thập phân và dùng khoảng trắng hay dấu chấm phẩy để ngăn các số.');
+          '. Nhập số nguyên hoặc số thập phân. Dùng khoảng trắng hoặc dấu chấm phẩy để tách các số.');
       }
       const [whole, fraction = ''] = token.replace(',', '.').replace(/^[+-]/u, '').split('.');
       const units = BigInt((whole || '0') + fraction) * (token.startsWith('-') ? -1n : 1n);
@@ -19,9 +19,9 @@
   }
 
   function calculate(sampleInput, edgesInput) {
-    const sample = numbers(sampleInput, 'dữ liệu quan sát');
-    const edges = numbers(edgesInput, 'các mốc chia lớp');
-    if (edges.length < 2) throw new Error('Cần ít nhất hai mốc để tạo một lớp.');
+    const sample = numbers(sampleInput, 'mẫu số liệu');
+    const edges = numbers(edgesInput, 'dãy mốc chia nhóm');
+    if (edges.length < 2) throw new Error('Cần ít nhất hai mốc để tạo một nhóm.');
     // A common decimal scale keeps comparisons at bin boundaries exact.
     const places = [...sample, ...edges].reduce((max, x) => Math.max(max, x.places), 0);
     const unit = 10n ** BigInt(places);
@@ -30,7 +30,7 @@
     const groups = [];
     for (let i = 1; i < bounds.length; i++) {
       if (bounds[i] <= bounds[i - 1]) {
-        throw new Error('Mốc thứ ' + (i + 1) + ' phải lớn hơn mốc đứng trước. Hãy kiểm tra thứ tự và các mốc trùng nhau.');
+        throw new Error('Mốc thứ ' + (i + 1) + ' phải lớn hơn mốc đứng trước. Hãy xếp các mốc theo thứ tự tăng dần và bỏ các mốc trùng nhau.');
       }
       const width = bounds[i] - bounds[i - 1];
       const label = '[' + edges[i - 1].label + '; ' + edges[i].label + (i === bounds.length - 1 ? ']' : ')');
@@ -76,8 +76,9 @@
     const left = 57, right = 453, top = 34, bottom = 185;
     const heightLabel = data.equalWidths ? 'Tần số tương đối (%)' : 'Mật độ (% trên một đơn vị)';
     const svg = svgNode('svg', {viewBox: '0 0 480 220', role: 'img', 'aria-label':
-      'Biểu đồ các lớp liên tiếp. Trục đứng: ' + heightLabel + '. Số liệu chi tiết nằm trong bảng.'});
-    svg.append(svgNode('title', {}, 'Biểu đồ tần số tương đối ghép nhóm'));
+      'Biểu đồ mẫu số liệu ghép nhóm. Đại lượng trên trục tung là ' + heightLabel.toLocaleLowerCase('vi') +
+      '. Xem số liệu chi tiết trong bảng.'});
+    svg.append(svgNode('title', {}, 'Biểu đồ mẫu số liệu ghép nhóm'));
     const heights = data.groups.map(g => (100 * g.count / data.total) / (data.equalWidths ? 1 : g.width));
     const max = heights.reduce((a, b) => Math.max(a, b), 0);
     const span = data.groups.reduce((sum, g) => sum + g.width, 0);
@@ -98,7 +99,7 @@
       const height = max ? heights[i] / max * (bottom - top) : 0;
       const rect = svgNode('rect', {x, y: bottom - height, width: Math.max(0, next - x), height,
         fill: i % 2 ? '#72aa8b' : '#367552', stroke: '#234c37', 'stroke-width': 0.7});
-      rect.append(svgNode('title', {}, group.label + ' — ' + group.count + ' quan sát'));
+      rect.append(svgNode('title', {}, group.label + ' có ' + group.count + ' giá trị quan sát'));
       svg.append(rect, svgNode('line', {x1: x, x2: x, y1: bottom, y2: bottom + 4, stroke: '#294436'}));
       const labelRoom = Math.max(34, group.start.length * 8);
       if (i > 0 && x - lastLabel > labelRoom && right - x > labelRoom) {
@@ -144,22 +145,22 @@
         return;
       }
       const covered = data.total - data.below - data.above;
-      status.textContent = 'Có ' + data.total + ' quan sát, trong đó ' + covered + ' thuộc các lớp đã chọn, ' +
+      status.textContent = 'Có ' + data.total + ' giá trị quan sát, trong đó ' + covered + ' thuộc các nhóm đã chọn, ' +
         data.below + ' nhỏ hơn mốc đầu và ' + data.above + ' lớn hơn mốc cuối.';
       const body = root.querySelector('[data-grouped-body]');
       const rows = document.createDocumentFragment();
-      if (data.below) rows.append(tableRow('Dưới ' + data.first + ' (ngoài lớp)', data.below, data.total));
+      if (data.below) rows.append(tableRow('Dưới ' + data.first + ' (ngoài các nhóm)', data.below, data.total));
       for (const group of data.groups) rows.append(tableRow(group.label, group.count, data.total));
-      if (data.above) rows.append(tableRow('Trên ' + data.last + ' (ngoài lớp)', data.above, data.total));
+      if (data.above) rows.append(tableRow('Trên ' + data.last + ' (ngoài các nhóm)', data.above, data.total));
       body.replaceChildren(rows);
       root.querySelector('[data-grouped-total]').replaceChildren(tableRow('Toàn mẫu', data.total, data.total));
       if (!covered) {
-        caption.textContent = 'Mọi lớp đều có tần số bằng 0. Mở rộng các mốc để thấy phân bố của dữ liệu.';
+        caption.textContent = 'Mọi giá trị đều nằm ngoài các nhóm đã chọn. Hãy điều chỉnh mốc đầu và mốc cuối để đưa các giá trị vào biểu đồ.';
         figure.replaceChildren();
       } else {
         caption.textContent = data.equalWidths
-          ? 'Các lớp rộng bằng nhau. Chiều cao mỗi cột là tần số tương đối của lớp, tính theo phần trăm toàn mẫu.'
-          : 'Các lớp rộng khác nhau. Chiều rộng cột bằng độ rộng lớp theo trục ngang. Chiều cao là tần số tương đối (%) chia cho độ rộng lớp. Diện tích cột theo hai trục biểu thị phần trăm toàn mẫu thuộc lớp đó.';
+          ? 'Các nhóm có cùng độ rộng. Chiều cao mỗi cột biểu thị tỉ lệ phần trăm số giá trị của cả mẫu thuộc nhóm đó.'
+          : 'Các nhóm có độ rộng khác nhau. Chia tần số tương đối (tính theo phần trăm) cho độ rộng nhóm để được chiều cao cột. Diện tích mỗi cột, tính theo đơn vị trên hai trục, biểu thị tỉ lệ phần trăm số giá trị của cả mẫu thuộc nhóm đó.';
         figure.replaceChildren(histogram(data));
       }
       results.hidden = false;
