@@ -13,6 +13,7 @@
 <h2 id="doc-muc-tieu-title">1. Đọc điều cần chứng minh</h2><p>Cho n là một số tự nhiên bất kỳ. Ta cần chứng minh n = n. Trong bảng bên dưới, dòng n : So_tu_nhien cho biết n là số tự nhiên. Sau dấu ⊢ là điều cần chứng minh.</p>
 <pre class="code-block workshop-goal" aria-label="Giả thiết và mục tiêu" tabindex="0"><code>n : So_tu_nhien
 ⊢ n = n</code></pre>
+
 <div class="workshop-task" data-workshop-task><form data-workshop-form hidden>
 <fieldset class="workshop-options"><legend>Lệnh nào chứng minh được đẳng thức n = n?</legend><label class="workshop-option"><input type="radio" name="doc-muc-tieu" value="doc-muc-tieu-0" required> <span><code>ket_luan n</code></span></label><label class="workshop-option"><input type="radio" name="doc-muc-tieu" value="doc-muc-tieu-1" required> <span><code>phan_xa</code></span></label></fieldset>
 <button class="button primary" type="submit">Đối chiếu dự đoán</button>
@@ -78,6 +79,7 @@ open ToanViet</code></pre></div></details><div class="write-guide"><p id="how-vi
 <pre class="code-block workshop-goal" aria-label="Giả thiết và mục tiêu" tabindex="0"><code>n : So_tu_nhien
 h : la_uoc_cua 3 n
 ⊢ la_uoc_cua 3 n</code></pre>
+
 <div class="workshop-task" data-workshop-task><form data-workshop-form hidden>
 <fieldset class="workshop-options"><legend>Em sửa dòng của Mai thế nào?</legend><label class="workshop-option"><input type="radio" name="sua-mot-loi" value="sua-mot-loi-0" required> <span><code>ket_luan h</code></span></label><label class="workshop-option"><input type="radio" name="sua-mot-loi" value="sua-mot-loi-1" required> <span><code>ket_luan 3</code></span></label></fieldset>
 <button class="button primary" type="submit">Đối chiếu dự đoán</button>
@@ -141,11 +143,12 @@ open ToanViet</code></pre></div></details><div class="write-guide"><p id="how-vi
   ket_luan h
 </code></pre></div></details></div></details>
 </section><section class="workshop-card" id="ghep-hai-du-kien" aria-labelledby="ghep-hai-du-kien-title">
-<h2 id="ghep-hai-du-kien-title">3. Tự ghép một chứng minh</h2><p>Giả sử a và b đều là bội của d. Viết a = du và b = dv. Khi đó a + b = d(u + v), nên tổng cũng là bội của d. Định lý <code>uoc_cua_tong</code> diễn đạt tính chất ấy. Khi áp dụng định lý, em có thể thấy Lean viết <code>d ∣ a</code> thay cho <code>la_uoc_cua d a</code>.</p>
+<h2 id="ghep-hai-du-kien-title">3. Tự ghép một chứng minh</h2><p>Giả sử a và b đều là bội của d. Viết a = du và b = dv. Khi đó a + b = d(u + v), nên tổng cũng là bội của d. Định lý có sẵn trong bài này dưới tên <code>uoc_cua_tong</code>. Khi áp dụng định lý, em có thể thấy Lean viết <code>d ∣ a</code> thay cho <code>la_uoc_cua d a</code>.</p>
 <pre class="code-block workshop-goal" aria-label="Giả thiết và mục tiêu" tabindex="0"><code>d a b : So_tu_nhien
 h1 : la_uoc_cua d a
 h2 : la_uoc_cua d b
 ⊢ la_uoc_cua d (a + b)</code></pre>
+<p><a href="huong-dan.html#tim-dinh-ly">Tìm định lý này từ điều cần chứng minh</a>.</p>
 <div class="workshop-task" data-workshop-task><form data-workshop-form hidden>
 <fieldset class="workshop-options"><legend>Sau dòng <code>ap_dung uoc_cua_tong</code>, hai mục tiêu xuất hiện theo thứ tự nào?</legend><label class="workshop-option"><input type="radio" name="ghep-hai-du-kien" value="ghep-hai-du-kien-0" required> <span>Trước là <code>d ∣ b</code>, sau là <code>d ∣ a</code>.</span></label><label class="workshop-option"><input type="radio" name="ghep-hai-du-kien" value="ghep-hai-du-kien-1" required> <span>Trước là <code>d ∣ a</code>, sau là <code>d ∣ b</code>.</span></label></fieldset>
 <button class="button primary" type="submit">Đối chiếu dự đoán</button>
