@@ -51,7 +51,9 @@
     });
     bar.append(heading, close);
     const help = document.createElement("p");
-    help.textContent = "Trong khung bên dưới, đặt con trỏ sau bước vừa viết rồi đọc điều cần chứng minh sau dấu ⊢. Mở mục “All Messages” (mọi thông báo) để xem lỗi và cảnh báo. Dòng “declaration uses `sorry`” cho biết chứng minh còn chỗ trống.";
+    help.textContent = editor.hasAttribute("data-lean-computation")
+      ? "Trong khung bên dưới, đặt con trỏ vào dòng #check hoặc #eval để đọc kiểu hoặc kết quả. Mở mục “All Messages” (mọi thông báo) để xem cả những dòng còn lại."
+      : "Trong khung bên dưới, đặt con trỏ sau bước vừa viết rồi đọc điều cần chứng minh sau dấu ⊢. Mở mục “All Messages” (mọi thông báo) để xem lỗi và cảnh báo. Dòng “declaration uses `sorry`” cho biết chứng minh còn chỗ trống.";
     if (editor.querySelector("[data-lean-prelude]")) {
       help.textContent += " Phần bạn vừa viết nằm ở cuối tệp.";
     }
