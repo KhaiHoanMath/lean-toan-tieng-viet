@@ -1,6 +1,18 @@
 /* © 2026 Nguyễn Đăng Khải Hoàn. Bảo lưu các quyền đối với phần biên soạn nguyên gốc. */
 (() => {
   "use strict";
+  const film = document.querySelector(".first-proof-film");
+  if (film) {
+    const video = film.querySelector("video");
+    film.querySelector(".film-chapters").addEventListener("click", event => {
+      const chapter = event.target.closest("a[data-video-start]");
+      if (!chapter || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      video.currentTime = Number(chapter.dataset.videoStart);
+      video.focus();
+      video.play().catch(() => { /* The native controls remain available. */ });
+    });
+  }
   const numeric = new Intl.NumberFormat("vi-VN",{maximumFractionDigits:2});
   const fmt = x => numeric.format(x);
   const reader = document.querySelector("[data-diagnostic-reader]");
@@ -20,7 +32,7 @@
       const raw = original.querySelector("code");
       raw.textContent = "";
       if (text.length > 24000) {
-        status.textContent = "Đoạn vừa dán quá dài. Hãy vào mục “All Messages” và sao chép riêng thông báo bạn muốn đọc.";
+        status.textContent = "Đoạn vừa dán quá dài. Hãy vào mục Tất cả thông báo (All Messages) và sao chép riêng thông báo bạn muốn đọc.";
         return;
       }
       if (!text.trim()) {

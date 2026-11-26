@@ -5,10 +5,20 @@
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
+  function openLinkedExercise() {
+    const target = document.getElementById(location.hash.slice(1));
+    if (target?.matches("details[id$='-mot-buoc']")) target.open = true;
+  }
+  openLinkedExercise();
+  window.addEventListener("hashchange", openLinkedExercise);
+
   function normalize(value) {
     return String(value ?? "").toLocaleLowerCase("vi")
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d").replace(/_/g, " ").replace(/[∣|]/g, " chia het dvd ")
+      .replace(/đ/g, "d").replace(/_/g, " ")
+      .replace(/\bp\s*\(\s*\p{L}[\p{L}\p{N}]*\s*[|∣]\s*\p{L}[\p{L}\p{N}]*\s*\)/gu, " xac suat co dieu kien ")
+      .replace(/(^|[^|])\|\s*[−-]?[\p{L}\p{N}]+(?:\s*[+−*/×÷-]\s*[\p{L}\p{N}]+)*\s*\|(?!\|)/gu, "$1 gia tri tuyet doi ")
+      .replace(/[∣|]/g, " chia het dvd ")
       .replace(/(\p{L})[-‐‑‒–—](?=\p{L})/gu, "$1 ")
       .replace(/\b(?:pythagoras|pythagore|py[ -]?ta[ -]?go|pi[ -]?ta[ -]?go)\b/g, "pythagore")
       .replace(/\b(?:ta[ -]?let|thales)\b/g, "thales")

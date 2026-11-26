@@ -1,0 +1,308 @@
+WEBVTT
+
+NOTE © 2026 Nguyễn Đăng Khải Hoàn. Bảo lưu các quyền đối với phần biên soạn nguyên gốc.
+
+00:00:00.240 --> 00:00:03.315 line:92%,end size:96%
+Mười bốn cộng hai mươi mốt
+bằng ba mươi lăm.
+
+00:00:03.315 --> 00:00:06.180 line:92%,end size:96%
+Cả hai số hạng
+đều chia hết cho bảy.
+
+00:00:06.510 --> 00:00:12.700 line:92%,end size:96%
+Nếu chỉ biết số hạng đầu
+chia hết cho bảy, liệu tổng
+có còn chia hết cho bảy không?
+
+00:00:13.750 --> 00:00:16.630 line:92%,end size:96%
+Ta sẽ dùng câu hỏi này
+để thử Lean.
+
+00:00:16.630 --> 00:00:20.010 line:92%,end size:96%
+Chỉ cần một trình duyệt
+và vài dòng chứng minh.
+
+00:00:20.692 --> 00:00:23.947 line:92%,end size:96%
+Số tự nhiên n đã cho
+chia hết cho ba.
+
+00:00:23.947 --> 00:00:26.262 line:92%,end size:96%
+Ta cần chứng minh
+chính điều ấy.
+
+00:00:27.156 --> 00:00:30.526 line:92%,end size:96%
+Trong ô mã, chữ h
+là tên của giả thiết.
+
+00:00:30.526 --> 00:00:34.856 line:92%,end size:96%
+Cụm đứng sau dấu hai chấm
+cho biết h khẳng định điều gì.
+
+00:00:35.186 --> 00:00:39.131 line:92%,end size:96%
+Hãy đọc từ trái sang phải:
+“ba là ước của n”.
+
+00:00:39.131 --> 00:00:43.016 line:92%,end size:96%
+Mục tiêu ở cuối dòng
+cũng là “ba là ước của n”.
+
+00:00:43.346 --> 00:00:46.426 line:92%,end size:96%
+Trên giấy, ta chỉ cần viết
+“theo giả thiết”.
+
+00:00:46.426 --> 00:00:49.196 line:92%,end size:96%
+Bây giờ hãy nói điều đó
+với Lean.
+
+00:00:50.115 --> 00:00:51.465 line:92%,end size:96%
+Bấm “Đến chỗ viết”.
+
+00:00:51.465 --> 00:00:54.190 line:92%,end size:96%
+Trang sẽ chọn sẵn
+chỗ còn trống.
+
+00:00:54.190 --> 00:00:56.305 line:92%,end size:96%
+Giữ nguyên phần thụt đầu dòng.
+
+00:00:56.635 --> 00:00:59.760 line:92%,end size:96%
+Gõ ket_luan h
+như trên màn hình.
+
+00:00:59.760 --> 00:01:03.390 line:92%,end size:96%
+Tên lệnh viết không dấu,
+có dấu gạch dưới.
+
+00:01:03.390 --> 00:01:05.785 line:92%,end size:96%
+Sau một dấu cách
+là tên giả thiết.
+
+00:01:06.698 --> 00:01:08.478 line:92%,end size:96%
+Bấm “Kiểm tra với Lean”.
+
+00:01:08.478 --> 00:01:13.348 line:92%,end size:96%
+Khi khung bên dưới tải xong,
+cuộn xuống cuối tệp
+để tìm bài của mình,
+
+00:01:13.348 --> 00:01:16.676 line:92%,end size:96%
+rồi đặt con trỏ
+ở cuối dòng vừa viết.
+
+00:01:17.006 --> 00:01:21.242 line:92%,end size:96%
+Nếu thấy “No goals”,
+nghĩa là không còn mục tiêu.
+
+00:01:21.242 --> 00:01:28.866 line:92%,end size:96%
+Mở “All Messages” để xem
+còn lỗi hay cảnh báo về chỗ
+chứng minh bỏ trống hay không.
+
+00:01:29.196 --> 00:01:33.061 line:92%,end size:96%
+Bài vừa rồi ngắn vì
+điều cần chứng minh đã có sẵn.
+
+00:01:33.061 --> 00:01:37.746 line:92%,end size:96%
+Ta thử một bài mà lựa chọn
+giả thiết thực sự có ý nghĩa.
+
+00:01:38.656 --> 00:01:40.741 line:92%,end size:96%
+Mở “Thư viện”, gõ “chia hết”.
+
+00:01:40.741 --> 00:01:44.456 line:92%,end size:96%
+Chọn bài lớp sáu “Khi nào tổng
+chia hết cho một số?”.
+
+00:01:44.786 --> 00:01:51.726 line:92%,end size:96%
+Đọc ví dụ rồi tự hỏi:
+khi cộng hai bội của bảy,
+vì sao ta lại được một bội của bảy?
+
+00:01:52.615 --> 00:01:54.575 line:92%,end size:96%
+Mười bốn bằng bảy nhân hai.
+
+00:01:54.575 --> 00:01:57.030 line:92%,end size:96%
+Hai mươi mốt bằng bảy nhân ba.
+
+00:01:57.030 --> 00:01:59.885 line:92%,end size:96%
+Cộng lại, ta đặt được
+bảy ra ngoài ngoặc.
+
+00:02:00.215 --> 00:02:02.760 line:92%,end size:96%
+Thử thay hai mươi mốt
+bằng hai mươi.
+
+00:02:02.760 --> 00:02:07.545 line:92%,end size:96%
+Số hạng đầu vẫn chia hết cho bảy,
+còn tổng là ba mươi tư.
+
+00:02:07.875 --> 00:02:13.305 line:92%,end size:96%
+Vậy trong lập luận ban đầu,
+ta đã dùng điều gì
+về số hạng thứ hai?
+
+00:02:14.615 --> 00:02:17.225 line:92%,end size:96%
+Trở lại bài học, chọn
+“Viết bằng Lean”.
+
+00:02:17.225 --> 00:02:20.935 line:92%,end size:96%
+Giả thiết thứ nhất
+nói d là ước của a.
+
+00:02:20.935 --> 00:02:23.885 line:92%,end size:96%
+Giả thiết thứ hai
+nói d là ước của b.
+
+00:02:24.215 --> 00:02:26.575 line:92%,end size:96%
+Hãy đọc mục tiêu
+ở cuối phát biểu.
+
+00:02:26.575 --> 00:02:31.395 line:92%,end size:96%
+Lần này ta phải chứng minh
+d là ước của tổng a cộng b.
+
+00:02:31.725 --> 00:02:36.205 line:92%,end size:96%
+Thử kết luận chỉ bằng
+giả thiết thứ nhất,
+rồi bấm kiểm tra.
+
+00:02:37.115 --> 00:02:39.620 line:92%,end size:96%
+Lean chỉ ra
+hai mệnh đề khác nhau.
+
+00:02:39.620 --> 00:02:43.470 line:92%,end size:96%
+Dòng mình viết mới chứng minh
+được d là ước của a.
+
+00:02:43.470 --> 00:02:45.795 line:92%,end size:96%
+Đề lại hỏi về a cộng b.
+
+00:02:46.125 --> 00:02:48.605 line:92%,end size:96%
+Bây giờ ta biết phải sửa ở đâu.
+
+00:02:48.605 --> 00:02:54.075 line:92%,end size:96%
+Muốn chuyển từ từng số hạng
+sang tổng của chúng,
+ta cần một định lý cộng.
+
+00:02:54.990 --> 00:02:57.910 line:92%,end size:96%
+Muốn nhìn rõ từng bước,
+hãy gõ ap_dung uoc_cua_tong.
+
+00:02:57.910 --> 00:03:02.690 line:92%,end size:96%
+Lean tách câu hỏi về tổng
+thành hai mục tiêu nhỏ.
+
+00:03:03.020 --> 00:03:05.730 line:92%,end size:96%
+Dùng giả thiết thứ nhất
+cho mục tiêu đầu.
+
+00:03:05.730 --> 00:03:10.890 line:92%,end size:96%
+Bây giờ trên màn hình
+chỉ còn một việc:
+chứng minh d là ước của b.
+
+00:03:11.940 --> 00:03:13.845 line:92%,end size:96%
+Giả thiết thứ hai vừa khớp.
+
+00:03:13.845 --> 00:03:18.470 line:92%,end size:96%
+Đó là chỗ ta đã bỏ sót
+khi thử viết lời giải lúc nãy.
+
+00:03:19.365 --> 00:03:24.985 line:92%,end size:96%
+Quy tắc uoc_cua_tong nói rằng
+một ước chung của hai số
+cũng là ước của tổng.
+
+00:03:25.315 --> 00:03:27.235 line:92%,end size:96%
+Quay lại ô viết trên trang.
+
+00:03:27.235 --> 00:03:32.695 line:92%,end size:96%
+Sau tên quy tắc,
+đưa vào lần lượt hai giả thiết
+như dòng đang hiện.
+
+00:03:32.695 --> 00:03:34.485 line:92%,end size:96%
+Bấm kiểm tra lần nữa.
+
+00:03:34.815 --> 00:03:37.310 line:92%,end size:96%
+Lần này lời giải đã khép lại.
+
+00:03:37.310 --> 00:03:45.115 line:92%,end size:96%
+Em có thể đọc dòng mã
+thành một câu: vì d là ước của
+cả a và b, nên d là ước của tổng.
+
+00:03:46.031 --> 00:03:47.861 line:92%,end size:96%
+Bây giờ đến lượt em.
+
+00:03:47.861 --> 00:03:52.606 line:92%,end size:96%
+Ở mục “Bài tập tự làm”,
+hãy thử hai biểu thức
+trên màn hình.
+
+00:03:52.606 --> 00:03:55.081 line:92%,end size:96%
+Em có thể tạm dừng video ở đây.
+
+00:03:58.281 --> 00:04:02.421 line:92%,end size:96%
+Với biểu thức thứ nhất,
+hãy thử đặt sáu ra ngoài ngoặc.
+
+00:04:02.421 --> 00:04:07.641 line:92%,end size:96%
+Với biểu thức thứ hai,
+sau khi chia cho sáu,
+còn dư bao nhiêu?
+
+00:04:07.971 --> 00:04:10.406 line:92%,end size:96%
+Nếu bí, mở từng gợi ý.
+
+00:04:10.406 --> 00:04:16.801 line:92%,end size:96%
+Khi đã có lời giải của mình,
+hãy đối chiếu và tìm xem bước nào
+đã dùng giả thiết nào.
+
+00:04:17.131 --> 00:04:21.591 line:92%,end size:96%
+Ta có 12n + 19 = 6(2n + 3) + 1.
+
+00:04:21.591 --> 00:04:27.511 line:92%,end size:96%
+Số dư luôn là 1,
+dù chọn n bằng bao nhiêu.
+
+00:04:28.406 --> 00:04:29.736 line:92%,end size:96%
+Quay lại ô Lean.
+
+00:04:29.736 --> 00:04:35.911 line:92%,end size:96%
+Giữ nguyên hai giả thiết,
+đổi riêng tổng ở kết luận
+từ a + b thành b + a.
+
+00:04:35.911 --> 00:04:38.846 line:92%,end size:96%
+Em sẽ đưa
+giả thiết nào vào trước?
+
+00:04:42.046 --> 00:04:45.081 line:92%,end size:96%
+Số hạng đầu bây giờ là b.
+
+00:04:45.081 --> 00:04:50.388 line:92%,end size:96%
+Hãy thử đặt h2 trước, h1 sau,
+rồi kiểm tra lời giải của em.
+
+00:04:51.281 --> 00:04:56.466 line:92%,end size:96%
+Lần tới, khi gặp
+một chứng minh khó đọc,
+hãy bắt đầu bằng hai câu hỏi.
+
+00:04:56.466 --> 00:04:58.091 line:92%,end size:96%
+Mình đã biết gì?
+
+00:04:58.091 --> 00:05:00.781 line:92%,end size:96%
+Dòng sắp viết
+sẽ chứng minh điều gì?
+
+00:05:01.111 --> 00:05:07.006 line:92%,end size:96%
+Đó cũng là cách dùng
+trang web này: tự nghĩ trên giấy,
+viết một bước rõ ràng,
+
+00:05:07.006 --> 00:05:09.331 line:92%,end size:96%
+rồi nhờ Lean kiểm tra bước ấy.
