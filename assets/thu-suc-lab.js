@@ -103,6 +103,55 @@
       "Với n = " + n + ", có " + than.children.length + " cách chọn hai mẫu số x, y thỏa mãn x ≤ y.";
   }
 
+  function bangDauNamDoi(banThu, form) {
+    const cacTran = [...form.querySelectorAll("[data-match]")];
+    const cacO = [...banThu.querySelectorAll("[data-team-score]")];
+    const cacDoi = cacO.map(o => o.dataset.teamScore);
+    const ketQua = banThu.querySelector("[data-lab-summary]");
+    // Mỗi cặp chỉ có một trận. Lúc đầu đội đứng trước trong bảng chữ cái thắng.
+    const doiThang = new Map(cacTran.map(nut => [nut.dataset.match, nut.dataset.match[0]]));
+    function capNhatBang() {
+      const daThang = new Map(cacDoi.map(doi => [doi, new Set()]));
+      for (const nut of cacTran) {
+        const cap = nut.dataset.match;
+        const thang = doiThang.get(cap);
+        const thua = thang === cap[0] ? cap[1] : cap[0];
+        daThang.get(thang).add(thua);
+        nut.textContent = thang + " thắng " + thua;
+      }
+      for (const o of cacO) o.textContent = String(daThang.get(o.dataset.teamScore).size);
+      const boBa = [];
+      for (let i = 0; i < cacDoi.length; i++) {
+        for (let j = i + 1; j < cacDoi.length; j++) {
+          for (let k = j + 1; k < cacDoi.length; k++) {
+            const [a, b, c] = [cacDoi[i], cacDoi[j], cacDoi[k]];
+            // Theo vòng a, b, c, cả ba trận cùng chiều hoặc cả ba cùng ngược chiều.
+            const ab = daThang.get(a).has(b), bc = daThang.get(b).has(c), ca = daThang.get(c).has(a);
+            if (ab === bc && bc === ca) {
+              const vong = ab ? [a, b, c, a] : [a, c, b, a];
+              boBa.push(vong.join(" → "));
+            }
+          }
+        }
+      }
+      ketQua.textContent = boBa.length
+        ? "Có " + boBa.length + " bộ ba thắng vòng. Mũi tên đi từ đội thắng đến đội thua. " + boBa.join(" · ") + "."
+        : "Chưa có bộ ba thắng vòng.";
+    }
+    for (const nut of cacTran) {
+      nut.addEventListener("click", () => {
+        const cap = nut.dataset.match;
+        doiThang.set(cap, doiThang.get(cap) === cap[0] ? cap[1] : cap[0]);
+        capNhatBang();
+      });
+    }
+    form.addEventListener("reset", () => {
+      for (const cap of doiThang.keys()) doiThang.set(cap, cap[0]);
+      capNhatBang();
+    });
+    capNhatBang();
+  }
+
   function haiLuot(banThu, nn, ns, sn, ss) {
     const tong = nn + ns + sn + ss, giu = ns + sn;
     const ketQua = banThu.querySelector("[data-lab-summary]");
@@ -135,7 +184,7 @@
       for (let i = 1; i < so.length; i++) {
         if (so[i] === so[i - 1] + 1) cap.push(so[i - 1] + " và " + so[i]);
       }
-      const nhanXet = cap.length ? "Các cặp liên tiếp đã chọn gồm " + cap.join(", ") + "."
+      const nhanXet = cap.length ? "Các cặp số liên tiếp đã chọn gồm " + cap.join(", ") + "."
         : "Chưa có hai số liên tiếp.";
       banThu.querySelector("[data-lab-summary]").textContent = so.length
         ? "Đã chọn " + so.length + " thẻ. " + nhanXet : "Chưa chọn thẻ nào.";
@@ -182,6 +231,10 @@
   for (const banThu of document.querySelectorAll("[data-thu-suc-lab]")) {
     const form = banThu.querySelector("[data-lab-controls]");
     form.hidden = false;
+    if (banThu.dataset.thuSucLab === "thang-vong") {
+      bangDauNamDoi(banThu, form);
+      continue;
+    }
     if (banThu.dataset.thuSucLab === "bao-mat-sau") {
       doiMayBao(banThu, form);
       continue;

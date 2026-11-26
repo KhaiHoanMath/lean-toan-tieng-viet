@@ -83,3 +83,14 @@
 .diagnostic-reader select { max-width: 100%; }
 .diagnostic-reader [data-diagnostic-results] code { white-space: pre-wrap; }
 .diagnostic-reader [data-diagnostic-status]:empty { display: none; }
+.first-proof-film video { display: block; width: 100%; height: auto; margin: .8rem 0; aspect-ratio: 16/9; border-radius: .5rem; background: #18382e; }
+.first-proof-film video::cue { font-family: system-ui, sans-serif; font-size: clamp(.9rem, 2.8vw, 1.35rem); }
+.film-mobile-tip { display: none; }
+@media (max-width: 42rem) {
+  .film-mobile-tip { display: block; }
+}
+.first-proof-film .film-chapters ol { list-style: none; padding: 0; margin: .25rem 0; }
+.film-chapters a { display: flex; gap: .8rem; align-items: baseline; padding: .5rem 0; }
+.film-chapters a > span { font-variant-numeric: tabular-nums; font-weight: 650; }
+.film-transcript h3 { margin: 1.4rem 0 .4rem; }
+.film-transcript p { margin: .5rem 0; }
